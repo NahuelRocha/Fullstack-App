@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd ${LAMBDA_TASK_ROOT:-.}
+
+./api -Dlogging.level.org.springframework.security=DEBUG \
+      -Dlogging.level.com.amazonaws.serverless.proxy.spring=DEBUG

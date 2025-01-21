@@ -1,0 +1,51 @@
+# General
+*.log
+*.env
+.DS_Store
+
+# Directories from IDEs and editors (common across both frontend and backend)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Build directories (common to backend and frontend)
+target/
+node_modules/
+dist/
+dist-ssr/
+
+# Backend specific
+backend/target/
+backend/!.mvn/wrapper/maven-wrapper.jar
+backend/!**/src/main/**/target/
+backend/!**/src/test/**/target/
+backend/!**/src/main/resources/META-INF/
+backend/**/src/main/resources/META-INF.native-image/
+
+# Frontend specific
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# Editor specific settings (VS Code, IntelliJ IDEA, etc.)
+.vscode/*
+!.vscode/extensions.json
+.idea
+.settings
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
