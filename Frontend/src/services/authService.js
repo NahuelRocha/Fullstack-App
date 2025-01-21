@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://ef7tdq553uxezbuxr2pof34one0cpvud.lambda-url.sa-east-1.on.aws/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const authService = {
   login: async (username, password) => {
