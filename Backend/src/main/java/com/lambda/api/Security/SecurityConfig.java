@@ -35,7 +35,6 @@ public class SecurityConfig {
     private final FrontendURL frontendURL;
 
 
-
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, FunctionURL functionURL, FrontendURL frontendURL) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.functionURL = functionURL;
@@ -46,7 +45,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(functionURL.getFunctionURL(), frontendURL.getFrontendURL()));
+        configuration.setAllowedOrigins(Arrays.asList(functionURL.getFunctionURL(), frontendURL.getFrontendURL(), "http://localhost:5173/"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","PATCH"));
         configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization",

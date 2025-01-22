@@ -7,6 +7,16 @@ const UnitOfMeasure = {
   KILOGRAM: 'KILOGRAM',
 };
 
+const initialFormState = {
+  name: '',
+  unitOfMeasure: UnitOfMeasure.UNIT,
+  quantity: 0,
+  purchaseCost: 0,
+  profitMargin: 0,
+  minimumOrder: 1,
+  available: true,
+};
+
 const formatUnit = unit => {
   switch (unit) {
     case 'UNIT':
@@ -27,15 +37,7 @@ const ProductManager = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    unitOfMeasure: UnitOfMeasure.UNIT,
-    quantity: 0,
-    purchaseCost: 0,
-    profitMargin: 0,
-    minimumOrder: 1,
-    available: true,
-  });
+  const [formData, setFormData] = useState(initialFormState);
 
   const fetchProducts = async () => {
     try {
@@ -62,10 +64,21 @@ const ProductManager = () => {
     return number.toString().replace('.', ',');
   };
 
+  const handleNewProduct = () => {
+    setEditingProduct(null);
+    setFormData(initialFormState);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingProduct(null);
+    setFormData(initialFormState);
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      // Create a new object with parsed numbers
       const parsedFormData = {
         ...formData,
         purchaseCost: parseLocalNumber(formData.purchaseCost.toString()),
@@ -80,17 +93,7 @@ const ProductManager = () => {
         await productService.createProduct(parsedFormData);
       }
 
-      setIsModalOpen(false);
-      setEditingProduct(null);
-      setFormData({
-        name: '',
-        unitOfMeasure: UnitOfMeasure.UNIT,
-        quantity: 0,
-        purchaseCost: 0,
-        profitMargin: 0,
-        minimumOrder: 1,
-        available: true,
-      });
+      handleCloseModal(); // Usamos la nueva función en lugar de solo cerrar el modal
       fetchProducts();
     } catch (err) {
       setError(err.message);
@@ -130,9 +133,9 @@ const ProductManager = () => {
   }, [searchTerm, products]);
 
   return (
-    <div className="space-y-6 p-2 mt-0 md:mt-4">
+    <div className="space-y-6 mt-2 md:mt-6">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <h1 className="text-3xl ml-2 font-bold text-gray-800">Gestor de Productos</h1>
+        <h1 className="text-3xl md:ml-4 font-bold text-gray-800">Gestor de Productos</h1>
         <div className="relative w-full sm:w-1/2">
           <input
             type="text"
@@ -144,10 +147,10 @@ const ProductManager = () => {
           <Search className="absolute right-3 top-3 text-gray-400" />
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleNewProduct}
           className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-brightColor text-white rounded-lg hover:bg-brightColor/90 transition-colors"
         >
-          <Plus className="w-5 h-5 mr-2" />
+          <Plus className="w-5 h-5 -ml-1 mr-1 md:mr-2" />
           Nuevo Producto
         </button>
       </div>
@@ -155,135 +158,101 @@ const ProductManager = () => {
       {error && <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-4">{error}</div>}
 
       {/* Products Table with horizontal scroll on mobile */}
-      <div className="overflow-auto">
-        <div className="min-w-full inline-block align-middle">
-          <div className="overflow-hidden border rounded-lg">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
+      <div className="relative overflow-x-auto border rounded-lg">
+        <table className="min-w-full border-collapse border border-gray-200 divide-y divide-gray-300">
+          <thead className="bg-gray-50">
+            <tr>
+              <th
+                scope="col"
+                className="sticky left-0 z-10 bg-white md:bg-gray-50 px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300"
+              >
+                Nombre
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                Cantidad
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                Unidad
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                $ de compra
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                Costo x KG / UN
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                % de Ganancia
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                Orden mínima
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                $ de venta
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                Estado
+              </th>
+              <th className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 bg-white">
+            {filteredProducts.map(product => (
+              <tr key={product.id} className="hover:bg-gray-50">
+                <td className="sticky left-0 z-10 bg-white px-3 py-1 text-md text-gray-800 border-r border-gray-300 shadow-lg whitespace-nowrap">
+                  {product.name}
+                </td>
+                <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
+                  {product.quantity}
+                </td>
+                <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
+                  {formatUnit(product.unitOfMeasure)}
+                </td>
+                <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
+                  ${product.purchaseCost}
+                </td>
+                <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
+                  ${product.cost}
+                </td>
+                <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
+                  {product.profitMargin}%
+                </td>
+                <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
+                  {product.minimumOrder}
+                </td>
+                <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
+                  ${product.price}
+                </td>
+                <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
+                  <span
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      product.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}
                   >
-                    Nombre
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    Cantidad
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    Unidad
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    $ de compra
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    Costo x KG / UN
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    % de Ganancia
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    Orden mínima
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    $ de venta
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    Estado
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-4 py-3 text-left text-gray-900 text-sm font-black uppercase"
-                  >
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {filteredProducts.map(product => (
-                  <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4 text-md text-gray-800 whitespace-nowrap">
-                      {product.name}
-                    </td>
-                    <td className="px-4 py-4 text-md text-gray-800 whitespace-nowrap">
-                      {product.quantity}
-                    </td>
-                    <td className="px-4 py-4 text-md  text-gray-800 whitespace-nowrap">
-                      {formatUnit(product.unitOfMeasure)}
-                    </td>
-                    <td className="px-4 py-4 text-md text-gray-800 whitespace-nowrap">
-                      ${product.purchaseCost}
-                    </td>
-                    <td className="px-4 py-4 text-md text-gray-800 whitespace-nowrap">
-                      ${product.cost}
-                    </td>
-                    <td className="px-4 py-4 text-md text-gray-800 whitespace-nowrap">
-                      {product.profitMargin}%
-                    </td>
-                    <td className="px-4 py-4 text-md text-gray-800 whitespace-nowrap">
-                      {product.minimumOrder}
-                    </td>
-                    <td className="px-4 py-4 text-md text-gray-800 whitespace-nowrap">
-                      ${product.price}
-                    </td>
-                    <td className="px-4 py-4 text-md whitespace-nowrap">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.available
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {product.available ? 'Disponible' : 'No disponible'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(product)}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          <Pencil className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                    {product.available ? 'Disponible' : 'No disponible'}
+                  </span>
+                </td>
+                <td className="px-4 py-4 text-sm whitespace-nowrap">
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleEdit(product)}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      <Pencil className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Pagination */}
@@ -407,10 +376,7 @@ const ProductManager = () => {
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setEditingProduct(null);
-                  }}
+                  onClick={handleCloseModal}
                   className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                 >
                   Cancelar

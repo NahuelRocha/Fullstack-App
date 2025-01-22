@@ -46,7 +46,8 @@ public class Mapper {
                 menuItem.getId(), menuItem.getTitle(), menuItem.getSubtitle(),
                 menuItem.getDescription(), menuItem.getPrice(),
                 menuItem.getContentItems(), menuItem.getImageUrls(),
-                menuItem.getCategory().getName()
+                menuItem.getCategory().getName(),
+                menuItem.getCategory().getId()
         );
     }
 

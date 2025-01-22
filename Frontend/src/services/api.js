@@ -228,7 +228,7 @@ export const imageService = {
     } catch (error) {
       if (error.response?.data?.IMAGE_ERROR) {
         throw new Error(
-          'Esta imagen está en uso por un servicio o banner y no puede ser eliminada. Por favor, elimine primero la referencia a esta imagen.'
+          'Esta imagen está en uso por un servicio o banner. Por favor, elimine primero la referencia a esta imagen.'
         );
       }
       throw new Error(error.response?.data?.message || 'Error al eliminar la imagen');

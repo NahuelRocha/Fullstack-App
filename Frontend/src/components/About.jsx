@@ -1,5 +1,4 @@
 import img from '../assets/images/DE-LOGO.png';
-import Button from '../layouts/Button';
 import { useState, useEffect } from 'react';
 import { aboutService } from '../services/api';
 
@@ -44,9 +43,6 @@ const About = () => {
       <div className=" space-y-4 lg:pt-14">
         <h1 className=" font-semibold text-4xl text-center md:text-start">Por que elegirnos?</h1>
         <p>{aboutInfo.about}</p>
-        <div className=" flex justify-center lg:justify-start">
-          <Button title="Learn More" />
-        </div>
       </div>
     </div>
   );

@@ -85,21 +85,21 @@ const ProductSelectorModal = ({ isOpen, onClose, products, onSelectProduct, sele
 };
 
 ProductSelectorModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired, // Determina si el modal está abierto
-  onClose: PropTypes.func.isRequired, // Función para cerrar el modal
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
   products: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired, // ID único del producto
-      name: PropTypes.string.isRequired, // Nombre del producto
-      price: PropTypes.number.isRequired, // Precio del producto
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
     })
-  ).isRequired, // Lista de productos disponibles para seleccionar
-  onSelectProduct: PropTypes.func.isRequired, // Función que se llama al seleccionar un producto
+  ).isRequired,
+  onSelectProduct: PropTypes.func.isRequired,
   selectedProducts: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired, // ID único del producto seleccionado
+      id: PropTypes.number.isRequired,
     })
-  ).isRequired, // Productos ya seleccionados que no deben aparecer en la lista
+  ).isRequired,
 };
 
 export default ProductSelectorModal;

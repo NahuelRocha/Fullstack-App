@@ -7,10 +7,9 @@ const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Verifica si el token existe en el almacenamiento local
     const token = authService.getToken();
     if (!token) {
-      navigate('/login'); // Redirigir al login si no hay token
+      navigate('/login');
     } else {
       setIsAuthenticated(true);
     }

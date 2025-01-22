@@ -6,6 +6,7 @@ import { useDropzone } from 'react-dropzone';
 const ImageManager = () => {
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
+  const [modalError, setModalError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -64,16 +65,22 @@ const ImageManager = () => {
 
     try {
       setDeleteLoading(true);
+      setModalError(null);
       await imageService.deleteImage(selectedImage.id);
       await fetchImages();
       setShowDeleteDialog(false);
       setSelectedImage(null);
-      setError(null);
     } catch (err) {
-      setError(err.message);
+      setModalError(err.message);
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowDeleteDialog(false);
+    setModalError(null);
+    setSelectedImage(null);
   };
 
   const handlePrevImage = () => {
@@ -121,7 +128,7 @@ const ImageManager = () => {
         </div>
       </div>
 
-      {/* Error Alert */}
+      {/* Error Alert for Upload */}
       {error && (
         <div className="flex items-center gap-2 p-4 text-red-700 bg-red-100 rounded-lg">
           <AlertCircle className="h-4 w-4" />
@@ -247,9 +254,18 @@ const ImageManager = () => {
             <p className="text-gray-600 mb-4">
               ¿Estás seguro de que deseas eliminar esta imagen? Esta acción no se puede deshacer.
             </p>
+
+            {/* Modal Error Message */}
+            {modalError && (
+              <div className="mb-4 flex items-center gap-2 p-4 text-red-700 bg-red-100 rounded-lg">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <p>{modalError}</p>
+              </div>
+            )}
+
             <div className="flex justify-end space-x-2">
               <button
-                onClick={() => setShowDeleteDialog(false)}
+                onClick={handleCloseModal}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 Cancelar

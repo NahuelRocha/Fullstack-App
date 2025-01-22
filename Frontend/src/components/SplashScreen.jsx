@@ -41,7 +41,7 @@ const SplashScreen = ({ onAnimationEnd }) => {
         animate={{ opacity: 1 }} // Hace que el eslogan sea visible
         transition={{ duration: 2, delay: 1 }} // Retraso para que el eslogan aparezca después del logo
       >
-        Bienvenido!
+        Bienvenido
       </motion.h1>
 
       {/* Indicador de Carga */}

@@ -210,7 +210,7 @@ const ServiceManager = () => {
       price: service.price,
       contentItems: service.contentItems,
       imageUrls: service.imageUrls,
-      newCategoryId: service.category,
+      newCategoryId: service.category_id,
     });
 
     // Reconstruir los productos seleccionados
