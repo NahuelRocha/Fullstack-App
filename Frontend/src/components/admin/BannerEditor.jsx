@@ -251,11 +251,13 @@ const BannerEditor = () => {
             <div className="relative mb-4">
               {/* Imagen principal */}
               <div className="relative aspect-video mb-4">
-                <img
-                  src={filteredAvailableImages[currentAvailableIndex].url}
-                  alt={`Available ${currentAvailableIndex + 1}`}
-                  className="w-full h-full object-cover rounded-lg shadow-lg"
-                />
+                {filteredAvailableImages[currentAvailableIndex] && (
+                  <img
+                    src={filteredAvailableImages[currentAvailableIndex].url}
+                    alt={`Available ${currentAvailableIndex + 1}`}
+                    className="w-full h-full object-cover rounded-lg shadow-lg"
+                  />
+                )}
                 <button
                   onClick={() => handleAddImage(filteredAvailableImages[currentAvailableIndex].url)}
                   disabled={bannerData.images.length >= MAX_IMAGES}
@@ -289,14 +291,10 @@ const BannerEditor = () => {
                   <div
                     key={image.id}
                     className={`
-                      flex-none w-20 h-14 rounded-lg overflow-hidden cursor-pointer
-                      transition-all duration-200 mt-1 ml-1
-                      ${
-                        index === currentAvailableIndex
-                          ? 'ring-2 ring-blue-500 ring-offset-2'
-                          : 'opacity-60'
-                      }
-                    `}
+            flex-none w-20 h-14 rounded-lg overflow-hidden cursor-pointer
+            transition-all duration-200 mt-1 ml-1
+            ${index === currentAvailableIndex ? 'ring-2 ring-blue-500 ring-offset-2' : 'opacity-60'}
+          `}
                     onClick={() => setCurrentAvailableIndex(index)}
                   >
                     <img

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 const MenuItem = ({ item }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     if (item.imageUrls.length <= 1) return;
@@ -23,16 +24,19 @@ const MenuItem = ({ item }) => {
     window.open(whatsappUrl, '_blank');
   };
 
-  const [showMore, setShowMore] = useState(false);
-
   const handleShowMoreClick = () => {
     setShowMore(true);
   };
 
   return (
-    <div className="bg-white space-y-1 rounded-xl shadow-lg overflow-hidden flex flex-col h-[430px] md:mb-5">
+    <div className="bg-white space-y-1 rounded-xl shadow-lg overflow-hidden flex flex-col min-h-[430px] md:mb-5">
       {/* Contenedor de imagen con proporción fija */}
-      <div className="relative w-full aspect-[16/6] -mb-2">
+      <div className="relative w-full aspect-[16/7] md:aspect-[16/5.5] -mb-2">
+        {/* Icono de descuento superpuesto */}
+        <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-12 h-12 flex items-center justify-center z-10 shadow-lg">
+          <span className="font-bold text-lg">20%</span>
+        </div>
+
         {item.imageUrls.map((url, index) => (
           <img
             key={index}
@@ -46,10 +50,10 @@ const MenuItem = ({ item }) => {
       </div>
 
       {/* Contenido de texto */}
-      <div className="p-4 grow flex-shrink">
+      <div className="p-2 flex-1 overflow-y-auto">
         {/* Título y subtítulo */}
         <div className="space-y-1">
-          <h3 className="text-2xl font-bold text-gray-900">{item.title}</h3>
+          <h3 className="text-xl ml-2  mt-1 font-bold text-gray-900">{item.title}</h3>
           <h4 className="text-md font-semibold text-gray-800">{item.subtitle}</h4>
         </div>
 
@@ -57,10 +61,10 @@ const MenuItem = ({ item }) => {
         <p className="text-md mb-1 text-gray-600 leading-relaxed">{item.description}</p>
 
         {/* Lista de contenidos */}
-        <ul className="space-y-0 grid grid-cols-2">
+        <ul className="space-y-0 grid grid-cols-1">
           {item.contentItems.slice(0, showMore ? undefined : 7).map((content, index) => (
             <li key={index} className="flex items-start">
-              <span className="text-brightColor mr-2">•</span>
+              <span className="ml-2 text-brightColor mr-2">•</span>
               <span className="text-gray-600">{content}</span>
             </li>
           ))}

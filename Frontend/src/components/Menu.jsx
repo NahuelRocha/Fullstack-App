@@ -110,16 +110,8 @@ const Menu = () => {
   }
 
   return (
-    <div className="min-h-screen pt-16 mb-5">
+    <div className="min-h-screen mb-5 pt-20">
       <div className="max-w-6xl mx-auto px-4">
-        <motion.h1
-          initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-semibold text-center mt-2 mb-0 md:mb-1"
-        >
-          Nuestro Menú
-        </motion.h1>
-
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -132,7 +124,7 @@ const Menu = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
               onClick={() => handleCategoryChange(key)}
-              className={`whitespace-nowrap px-6 py-1 rounded-full transition-all ${
+              className={`whitespace-nowrap px-6 py-2 -mt-1 rounded-full transition-all ${
                 activeCategory === key
                   ? 'bg-brightColor text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -155,14 +147,14 @@ const Menu = () => {
               <motion.h2
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-3xl font-semibold -mt-3 text-brightColor flex items-center"
+                className="text-2xl font-semibold -mt-3 text-brightColor flex items-center mb-3 md:mb-0"
               >
                 <span className="mr-2">{groupedItems[activeCategory].display}</span>
                 <div className="h-px bg-brightColor flex-grow opacity-20"></div>
               </motion.h2>
 
               <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-1"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-1 text-lg md:text-base"
                 variants={containerVariants}
               >
                 {groupedItems[activeCategory].items.map((item, index) => (

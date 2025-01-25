@@ -304,7 +304,7 @@ const ProductManager = () => {
                     type="text"
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                     required
                   />
                 </div>
@@ -316,7 +316,7 @@ const ProductManager = () => {
                   <select
                     value={formData.unitOfMeasure}
                     onChange={e => setFormData({ ...formData, unitOfMeasure: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                   >
                     {Object.values(UnitOfMeasure).map(unit => (
                       <option key={unit} value={unit}>
@@ -341,7 +341,7 @@ const ProductManager = () => {
                         setFormData({ ...formData, quantity: value });
                       }
                     }}
-                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                   />
                 </div>
 
@@ -358,7 +358,7 @@ const ProductManager = () => {
                         setFormData({ ...formData, purchaseCost: value });
                       }
                     }}
-                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                   />
                 </div>
               </div>
@@ -379,7 +379,7 @@ const ProductManager = () => {
                         setFormData({ ...formData, profitMargin: value });
                       }
                     }}
-                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                   />
                 </div>
 
@@ -389,13 +389,13 @@ const ProductManager = () => {
                     type="number"
                     value={formData.minimumOrder}
                     onChange={e => setFormData({ ...formData, minimumOrder: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                     required
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <input
                   type="checkbox"
                   checked={formData.available}

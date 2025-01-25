@@ -1,19 +1,30 @@
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, X, Edit, Image as ImageIcon } from 'lucide-react';
-import { menuService, productService, imageService, categoryService } from '../../services/api';
+import { menuService } from '../../services/api';
 import ProductSelectorModal from '../ProductSelectorModal';
+import { useInitialData } from '../../hooks/useInitialData';
+import { useServiceForm } from '../../hooks/useServiceForm';
+import {
+  parseContentItemQuantity,
+  findProductByName,
+  reconstructSelectedProducts,
+} from '../../utils/serviceUtils';
 
 const ServiceManager = () => {
-  const [services, setServices] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [availableImages, setAvailableImages] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
   const [error, setError] = useState(null);
   const [editingService, setEditingService] = useState(null);
-  const [categories, setCategories] = useState([]);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [formData, setFormData] = useState({
+  const {
+    services,
+    setServices,
+    products,
+    availableImages,
+    categories,
+    error: initialError,
+  } = useInitialData();
+
+  const initialFormState = {
     title: '',
     subtitle: '',
     description: '',
@@ -21,58 +32,21 @@ const ServiceManager = () => {
     contentItems: [],
     imageUrls: [],
     newCategoryId: 1,
-  });
-  const [currentCustomItem, setCurrentCustomItem] = useState({
-    quantity: '',
-    name: '',
-    price: 0,
-  });
+  };
 
-  useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        setError(null);
-
-        // Realizar las llamadas por separado para mejor manejo de errores
-        const servicesPromise = menuService.getAllMenuItems().catch(err => {
-          console.log('Error loading services:', err);
-          return [];
-        });
-
-        const productsPromise = productService.getAllProducts().catch(err => {
-          console.log('Error loading products:', err);
-          return { content: [] };
-        });
-
-        const imagesPromise = imageService.getAllImages().catch(err => {
-          console.log('Error loading images:', err);
-          return [];
-        });
-
-        const categoriesPromise = categoryService.getAllCategories().catch(err => {
-          console.log('Error loading categories:', err);
-          return [];
-        });
-
-        const [servicesData, productsData, imagesData, categoriesData] = await Promise.all([
-          servicesPromise,
-          productsPromise,
-          imagesPromise,
-          categoriesPromise,
-        ]);
-
-        setServices(servicesData);
-        setProducts(productsData.content || productsData || []);
-        setAvailableImages(imagesData);
-        setCategories(categoriesData);
-      } catch (err) {
-        console.error('Error in loadInitialData:', err);
-        setError('Error cargando los datos. Por favor, intente nuevamente.');
-      }
-    };
-
-    loadInitialData();
-  }, []);
+  const {
+    formData,
+    setFormData,
+    selectedProducts,
+    setSelectedProducts,
+    currentCustomItem,
+    setCurrentCustomItem,
+    handleAddCustomContentItem,
+    handleAddProduct,
+    handleImageAdd,
+    handleImageRemove,
+    resetForm,
+  } = useServiceForm(initialFormState);
 
   // Update content items when products or custom items change
   useEffect(() => {
@@ -85,65 +59,20 @@ const ServiceManager = () => {
     }));
   }, [selectedProducts]);
 
-  const handleAddCustomContentItem = () => {
-    const { quantity, name, price } = currentCustomItem;
-
-    // Validate input
-    if (name.trim() && quantity > 0) {
-      const newCustomItem = {
-        ...currentCustomItem,
-        isCustom: true,
-        id: `custom-${Date.now()}`, // Unique identifier for custom items
-      };
-
-      // Update selected products (which now includes both product and custom items)
-      const updatedSelectedProducts = [...selectedProducts, newCustomItem];
-      setSelectedProducts(updatedSelectedProducts);
-
-      // Reset current custom item input
-      setCurrentCustomItem({
-        quantity: 1,
-        name: '',
-        price: 0,
-      });
-
-      // Update service from products (now including custom items)
-      updateServiceFromProducts(updatedSelectedProducts);
-    }
-  };
-
-  const handleAddProduct = product => {
-    setSelectedProducts([...selectedProducts, { ...product, quantity: 1 }]);
-    updateServiceFromProducts([...selectedProducts, { ...product, quantity: 1 }]);
-  };
-
   const updateServiceFromProducts = products => {
     const contentItems = products.map(p =>
       p.isCustom ? `${p.quantity} ${p.name}` : `${p.quantity} ${p.name}`
     );
-    const totalPrice = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
+
+    // Calcular el precio total solo si el usuario no ha editado manualmente el precio
+    const isPriceManuallyEdited = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
+    const totalPrice = isPriceManuallyEdited;
 
     setFormData(prev => ({
       ...prev,
       contentItems,
       price: totalPrice,
     }));
-  };
-
-  const handleImageAdd = imageUrl => {
-    if (formData.imageUrls.length < 3 && !formData.imageUrls.includes(imageUrl)) {
-      setFormData({
-        ...formData,
-        imageUrls: [...formData.imageUrls, imageUrl],
-      });
-    }
-  };
-
-  const handleImageRemove = imageUrl => {
-    setFormData({
-      ...formData,
-      imageUrls: formData.imageUrls.filter(url => url !== imageUrl),
-    });
   };
 
   const scrollToTop = () => {
@@ -173,9 +102,6 @@ const ServiceManager = () => {
         setSuccessMessage('Servicio creado con éxito');
       }
 
-      // Recargar servicios y limpiar formulario
-      const servicesData = await menuService.getAllMenuItems();
-      setServices(servicesData);
       resetForm();
       scrollToTop(); // Añadir scroll al top
 
@@ -183,63 +109,6 @@ const ServiceManager = () => {
     } catch (error) {
       setError(error.message);
     }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      subtitle: '',
-      description: '',
-      price: 0,
-      contentItems: [],
-      imageUrls: [],
-      newCategoryId: 1,
-    });
-    setSelectedProducts([]);
-    setEditingService(null);
-  };
-
-  const parseContentItemQuantity = contentItem => {
-    const match = contentItem.match(/^(\d+)\s+(.+)$/);
-    if (match) {
-      return {
-        quantity: parseInt(match[1]),
-        productName: match[2],
-      };
-    }
-    return null;
-  };
-
-  const findProductByName = (productName, productsList) => {
-    return productsList.find(p => p.name === productName);
-  };
-
-  const reconstructSelectedProducts = (contentItems, productsList) => {
-    return contentItems
-      .map(item => {
-        const parsed = parseContentItemQuantity(item);
-        if (!parsed) return null;
-
-        // Buscar en la lista de productos
-        const product = findProductByName(parsed.productName, productsList);
-
-        if (product) {
-          return {
-            ...product,
-            quantity: parsed.quantity,
-          };
-        }
-
-        // Si no se encuentra en la lista de productos, asumir que es personalizado
-        return {
-          id: `custom-${Date.now()}`, // Generar un nuevo ID para elementos personalizados
-          name: parsed.productName,
-          quantity: parsed.quantity,
-          price: 0, // No se puede inferir el precio aquí, debería recuperarse de otra forma si es posible
-          isCustom: true,
-        };
-      })
-      .filter(item => item !== null);
   };
 
   const handleEditService = service => {
@@ -390,14 +259,14 @@ const ServiceManager = () => {
                     value={currentCustomItem.quantity}
                     onChange={e => handleCustomItemChange('quantity', e.target.valueAsNumber)}
                     placeholder="Cantidad"
-                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                   />
                   <input
                     type="text"
                     value={currentCustomItem.name}
                     onChange={e => handleCustomItemChange('name', e.target.value)}
                     placeholder="Nombre del elemento"
-                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                   />
                   <input
                     type="number"
@@ -406,15 +275,15 @@ const ServiceManager = () => {
                     value={currentCustomItem.price}
                     onChange={e => handleCustomItemChange('price', e.target.value)}
                     placeholder="Precio"
-                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-1"
                   />
                   <button
                     type="button"
                     onClick={handleAddCustomContentItem}
-                    className="w-full px-4 py-2 bg-brightColor text-white rounded-lg hover:bg-opacity-90 flex items-center justify-center"
+                    className="px-4 py-2 bg-brightColor text-white rounded-lg hover:bg-opacity-90 flex items-center justify-center"
                     disabled={!currentCustomItem.name}
                   >
-                    <Plus className="w-5 h-5 mr-2" />
+                    <Plus className="-ml-1 w-4 h-4 mr-1" />
                     Añadir
                   </button>
                 </div>
@@ -424,8 +293,9 @@ const ServiceManager = () => {
                   {selectedProducts.map((item, index) => (
                     <div
                       key={item.id || index}
-                      className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg"
+                      className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg"
                     >
+                      {/* Campo de cantidad */}
                       <input
                         type="number"
                         min="1"
@@ -436,12 +306,23 @@ const ServiceManager = () => {
                           setSelectedProducts(newSelectedProducts);
                           updateServiceFromProducts(newSelectedProducts);
                         }}
-                        className="w-16 rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-0.5"
+                        className="w-12 rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-0.5 text-center"
                       />
-                      <span className="flex-1">{item.name}</span>
-                      <span className="text-gray-600">
+
+                      {/* Nombre del producto (con truncado y tooltip) */}
+                      <span
+                        className="flex-1 text-md truncate"
+                        title={item.name} // Tooltip con el nombre completo
+                      >
+                        {item.name}
+                      </span>
+
+                      {/* Precio total */}
+                      <span className="text-gray-600 text-md whitespace-nowrap">
                         ${(item.price * item.quantity).toFixed(2)}
                       </span>
+
+                      {/* Botón de eliminación */}
                       <button
                         type="button"
                         onClick={() => {
@@ -453,7 +334,7 @@ const ServiceManager = () => {
                         }}
                         className="text-red-500 hover:text-red-700"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" /> {/* Icono más pequeño */}
                       </button>
                     </div>
                   ))}
@@ -522,9 +403,23 @@ const ServiceManager = () => {
               </div>
 
               {/* Precio total y botones */}
-              <div className="space-y-4 pt-6 border-t">
-                <div className="text-2xl font-bold flex justify-center">
-                  Total: ${formData.price}
+              <div className="space-y-4 pt-4 border-t">
+                <div className="text-2xl flex justify-center items-center space-x-3">
+                  <label className="block text-gray-700 text-md font-bold">Total:</label>
+                  <input
+                    type="number"
+                    value={formData.price}
+                    onChange={e => {
+                      const newPrice = parseFloat(e.target.value);
+                      setFormData(prev => ({
+                        ...prev,
+                        price: isNaN(newPrice) ? 0 : newPrice, // Evitar NaN si el campo está vacío
+                      }));
+                    }}
+                    className="ml-2 w-32 font-medium rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 py-1 px-2"
+                    min="0"
+                    step="0.01"
+                  />
                 </div>
                 <div className="space-x-3 space-y-2 md:space-x-6 flex flex-col md:justify-center">
                   <button
