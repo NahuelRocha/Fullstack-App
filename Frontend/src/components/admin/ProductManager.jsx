@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { productService } from '../../services/api';
-import { Pencil, Trash2, Plus, Search } from 'lucide-react';
+import { Pencil, Trash2, Plus, Search, Info } from 'lucide-react';
+import ProductDetailModal from '../ProductDetailModal';
 
 const UnitOfMeasure = {
   UNIT: 'UNIT',
@@ -10,9 +11,9 @@ const UnitOfMeasure = {
 const initialFormState = {
   name: '',
   unitOfMeasure: UnitOfMeasure.UNIT,
-  quantity: 0,
-  purchaseCost: 0,
-  profitMargin: 0,
+  quantity: '',
+  purchaseCost: '',
+  profitMargin: '',
   minimumOrder: 1,
   available: true,
 };
@@ -37,6 +38,7 @@ const ProductManager = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null); // Nuevo estado para el producto seleccionado
   const [formData, setFormData] = useState(initialFormState);
 
   const fetchProducts = async () => {
@@ -93,7 +95,7 @@ const ProductManager = () => {
         await productService.createProduct(parsedFormData);
       }
 
-      handleCloseModal(); // Usamos la nueva función en lugar de solo cerrar el modal
+      handleCloseModal();
       fetchProducts();
     } catch (err) {
       setError(err.message);
@@ -112,6 +114,7 @@ const ProductManager = () => {
       available: product.available,
     });
     setIsModalOpen(true);
+    setSelectedProduct(null); // Cerrar el modal de detalles si está abierto
   };
 
   const handleDelete = async id => {
@@ -119,10 +122,16 @@ const ProductManager = () => {
       try {
         await productService.deleteProduct(id);
         fetchProducts();
+        setSelectedProduct(null); // Cerrar el modal de detalles después de eliminar
       } catch (err) {
         setError(err.message);
       }
     }
+  };
+
+  // Nuevo método para manejar los detalles del producto
+  const handleProductDetails = product => {
+    setSelectedProduct(product);
   };
 
   useEffect(() => {
@@ -164,7 +173,7 @@ const ProductManager = () => {
             <tr>
               <th
                 scope="col"
-                className="sticky left-0 z-10 bg-white md:bg-gray-50 px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300"
+                className="px-4 py-0 md:py-2 text-left text-gray-900 text-sm font-black uppercase border-r border-gray-300"
               >
                 Nombre
               </th>
@@ -200,8 +209,15 @@ const ProductManager = () => {
           <tbody className="divide-y divide-gray-200 bg-white">
             {filteredProducts.map(product => (
               <tr key={product.id} className="hover:bg-gray-50">
-                <td className="sticky left-0 z-10 bg-white px-3 py-1 text-md text-gray-800 border-r border-gray-300 shadow-lg whitespace-nowrap">
+                <td
+                  onClick={() => handleProductDetails(product)}
+                  className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap relative group"
+                >
                   {product.name}
+                  <Info
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-4 h-4"
+                    aria-label="Ver detalles del producto"
+                  />
                 </td>
                 <td className="px-3 py-1 text-md text-gray-800 border-r border-gray-300 whitespace-nowrap">
                   {product.quantity}
@@ -274,123 +290,149 @@ const ProductManager = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed pt-6 px-4 inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+            <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
               {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Nombre</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brightColor focus:ring-brightColor"
-                  required
-                />
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-900">Nombre</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-900">
+                    Unidad de Medida
+                  </label>
+                  <select
+                    value={formData.unitOfMeasure}
+                    onChange={e => setFormData({ ...formData, unitOfMeasure: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                  >
+                    {Object.values(UnitOfMeasure).map(unit => (
+                      <option key={unit} value={unit}>
+                        {formatUnit(unit)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Unidad de Medida</label>
-                <select
-                  value={formData.unitOfMeasure}
-                  onChange={e => setFormData({ ...formData, unitOfMeasure: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brightColor focus:ring-brightColor"
-                >
-                  {Object.values(UnitOfMeasure).map(unit => (
-                    <option key={unit} value={unit}>
-                      {formatUnit(unit)}
-                    </option>
-                  ))}
-                </select>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-900">Cantidad</label>
+                  <input
+                    type="text"
+                    value={formData.quantity}
+                    onChange={e => {
+                      let value = e.target.value;
+                      if (value === '') {
+                        setFormData({ ...formData, quantity: '' });
+                      } else if (/^[0-9]*[,.]?[0-9]*$/.test(value)) {
+                        setFormData({ ...formData, quantity: value });
+                      }
+                    }}
+                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-900">Costo de Compra</label>
+                  <input
+                    type="text"
+                    value={formData.purchaseCost}
+                    onChange={e => {
+                      let value = e.target.value;
+                      if (value === '') {
+                        setFormData({ ...formData, purchaseCost: '' });
+                      } else if (/^[0-9]*[,.]?[0-9]*$/.test(value)) {
+                        setFormData({ ...formData, purchaseCost: value });
+                      }
+                    }}
+                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Cantidad</label>
-                <input
-                  type="text" // Changed from "number" to "text"
-                  value={formatLocalNumber(formData.quantity)}
-                  onChange={e => {
-                    const value = e.target.value;
-                    if (value === '' || /^[0-9]*[,.]?[0-9]*$/.test(value)) {
-                      setFormData({ ...formData, quantity: value === '' ? 0 : value });
-                    }
-                  }}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brightColor focus:ring-brightColor"
-                  required
-                />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-900">
+                    Margen de Ganancia (%)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.profitMargin}
+                    onChange={e => {
+                      let value = e.target.value;
+                      if (value === '') {
+                        setFormData({ ...formData, profitMargin: '' });
+                      } else if (/^[0-9]*[,.]?[0-9]*$/.test(value)) {
+                        setFormData({ ...formData, profitMargin: value });
+                      }
+                    }}
+                    className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-900">Orden Mínima</label>
+                  <input
+                    type="number"
+                    value={formData.minimumOrder}
+                    onChange={e => setFormData({ ...formData, minimumOrder: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-2 order-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                    required
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Precio de Compra</label>
-                <input
-                  type="text" // Changed from "number" to "text"
-                  value={formatLocalNumber(formData.purchaseCost)}
-                  onChange={e => {
-                    const value = e.target.value;
-                    if (value === '' || /^[0-9]*[,.]?[0-9]*$/.test(value)) {
-                      setFormData({ ...formData, purchaseCost: value === '' ? 0 : value });
-                    }
-                  }}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brightColor focus:ring-brightColor"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Margen de Ganancia (%)
-                </label>
-                <input
-                  type="text" // Changed from "number" to "text"
-                  value={formatLocalNumber(formData.profitMargin)}
-                  onChange={e => {
-                    const value = e.target.value;
-                    if (value === '' || /^[0-9]*[,.]?[0-9]*$/.test(value)) {
-                      setFormData({ ...formData, profitMargin: value === '' ? 0 : value });
-                    }
-                  }}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brightColor focus:ring-brightColor"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Orden Mínima</label>
-                <input
-                  type="number"
-                  value={formData.minimumOrder}
-                  onChange={e =>
-                    setFormData({ ...formData, minimumOrder: parseInt(e.target.value) })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brightColor focus:ring-brightColor"
-                  required
-                  min="1"
-                />
-              </div>
-              <div className="flex items-center">
+
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={formData.available}
                   onChange={e => setFormData({ ...formData, available: e.target.checked })}
-                  className="h-4 w-4 text-brightColor focus:ring-brightColor border-gray-300 rounded"
+                  className="h-5 w-5 rounded text-brightColor focus:ring-brightColor"
                 />
-                <label className="ml-2 block text-sm text-gray-900">Disponible</label>
+                <label className="text-sm font-medium text-gray-900">Disponible</label>
               </div>
-              <div className="flex justify-end space-x-2">
+
+              <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className="px-4 py-2 bg-gray-200 rounded-lg text-gray-900 hover:bg-gray-300 transition-all"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brightColor hover:bg-brightColor/90"
+                  className="px-7 py-2 bg-brightColor text-white rounded-lg hover:bg-brightColor/90 transition-all"
                 >
-                  {editingProduct ? 'Actualizar' : 'Cargar'}
+                  {editingProduct ? 'Actualizar' : 'Crear'}
                 </button>
               </div>
             </form>
           </div>
         </div>
+      )}
+      {/* Nuevo Modal de Detalles de Producto */}
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          isOpen={!!selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       )}
     </div>
   );

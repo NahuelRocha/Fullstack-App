@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { bannerService, adminBannerService, imageService } from '../../services/api';
-import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, CheckCircle, Loader } from 'lucide-react';
 
 const BannerEditor = () => {
   const MAX_IMAGES = 5;
@@ -11,6 +11,8 @@ const BannerEditor = () => {
   });
   const [availableImages, setAvailableImages] = useState([]);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [currentAvailableIndex, setCurrentAvailableIndex] = useState(0);
 
@@ -38,11 +40,17 @@ const BannerEditor = () => {
 
   const handleUpdateData = async e => {
     e.preventDefault();
+    setIsLoading(true);
+    setSuccessMessage(null);
+    setError(null);
     try {
       await adminBannerService.updateBannerData(bannerData.title, bannerData.description);
       fetchData();
+      setSuccessMessage('Datos actualizados exitosamente');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,7 +67,14 @@ const BannerEditor = () => {
   const handleRemoveImage = async imageUrl => {
     try {
       await adminBannerService.removeBannerImage(imageUrl);
-      fetchData();
+
+      setBannerData(prevState => {
+        const updatedImages = prevState.images.filter(img => img !== imageUrl);
+        const newIndex = Math.max(0, Math.min(currentBannerIndex, updatedImages.length - 1));
+
+        setCurrentBannerIndex(newIndex); // Ajusta el índice para evitar referencias inválidas
+        return { ...prevState, images: updatedImages };
+      });
     } catch (err) {
       setError(err.message);
     }
@@ -98,6 +113,13 @@ const BannerEditor = () => {
         </div>
       )}
 
+      {successMessage && (
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded flex items-center">
+          <CheckCircle className="w-6 h-6 mr-2 text-green-500" />
+          <p>{successMessage}</p>
+        </div>
+      )}
+
       <form onSubmit={handleUpdateData} className="mb-8">
         <div className="mb-4">
           <label className="block text-gray-700 text-md font-bold mb-1">Título</label>
@@ -120,8 +142,12 @@ const BannerEditor = () => {
 
         <button
           type="submit"
-          className="bg-customColor hover:bg-customColor/90 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className={`flex items-center justify-center bg-customColor hover:bg-customColor/90 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
+            isLoading ? 'cursor-not-allowed opacity-70' : ''
+          }`}
+          disabled={isLoading}
         >
+          {isLoading && <Loader className="w-5 h-5 mr-2 animate-spin" />}
           Actualizar Datos
         </button>
       </form>

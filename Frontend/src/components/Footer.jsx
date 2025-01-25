@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { businessService } from '../services/api';
 import { Facebook, Instagram, Mail, Phone, Clock, MapPin, Menu } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const [businessInfo, setBusinessInfo] = useState(null);
@@ -81,21 +82,22 @@ const Footer = () => {
             {/* Menu Section */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-customColor">Menu</h2>
-              <nav className="space-y-3">
-                <a
-                  href="/"
-                  className="flex items-center gap-2 hover:text-customColor transition-colors duration-300"
-                >
-                  <Menu className="w-4 h-4" />
-                  <span>Ver Menú</span>
-                </a>
-                <a
-                  href="/products"
-                  className="flex items-center gap-2 hover:text-customColor transition-colors duration-300"
-                >
-                  <Menu className="w-4 h-4" />
-                  <span>Ver Productos</span>
-                </a>
+              <nav className="space-y-4">
+                <Link to="/menu">
+                  <a
+                    href="/menu"
+                    className="flex items-center gap-2 hover:text-customColor transition-colors duration-300"
+                  >
+                    <Menu className="w-4 h-4" />
+                    <span>Ver Menú</span>
+                  </a>
+                </Link>
+                <Link to="/custom">
+                  <a className="flex items-center gap-2 hover:text-customColor transition-colors duration-300">
+                    <Menu className="w-4 h-4" />
+                    <span>Arma tu pedido</span>
+                  </a>
+                </Link>
               </nav>
             </div>
 

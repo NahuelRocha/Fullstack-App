@@ -22,8 +22,12 @@ const ServiceManager = () => {
     imageUrls: [],
     newCategoryId: 1,
   });
+  const [currentCustomItem, setCurrentCustomItem] = useState({
+    quantity: 1,
+    name: '',
+    price: 0,
+  });
 
-  // Cargar datos iniciales con mejor manejo de errores
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -70,26 +74,53 @@ const ServiceManager = () => {
     loadInitialData();
   }, []);
 
+  // Update content items when products or custom items change
+  useEffect(() => {
+    const productContentItems = selectedProducts.map(p => `${p.quantity} ${p.name}`);
+    const allContentItems = [...productContentItems];
+
+    setFormData(prev => ({
+      ...prev,
+      contentItems: allContentItems,
+    }));
+  }, [selectedProducts]);
+
+  const handleAddCustomContentItem = () => {
+    const { quantity, name, price } = currentCustomItem;
+
+    // Validate input
+    if (name.trim() && quantity > 0) {
+      const newCustomItem = {
+        ...currentCustomItem,
+        isCustom: true,
+        id: `custom-${Date.now()}`, // Unique identifier for custom items
+      };
+
+      // Update selected products (which now includes both product and custom items)
+      const updatedSelectedProducts = [...selectedProducts, newCustomItem];
+      setSelectedProducts(updatedSelectedProducts);
+
+      // Reset current custom item input
+      setCurrentCustomItem({
+        quantity: 1,
+        name: '',
+        price: 0,
+      });
+
+      // Update service from products (now including custom items)
+      updateServiceFromProducts(updatedSelectedProducts);
+    }
+  };
+
   const handleAddProduct = product => {
     setSelectedProducts([...selectedProducts, { ...product, quantity: 1 }]);
     updateServiceFromProducts([...selectedProducts, { ...product, quantity: 1 }]);
   };
 
-  const handleUpdateQuantity = (index, quantity) => {
-    const newSelectedProducts = [...selectedProducts];
-    newSelectedProducts[index].quantity = parseInt(quantity) || 0;
-    setSelectedProducts(newSelectedProducts);
-    updateServiceFromProducts(newSelectedProducts);
-  };
-
-  const handleRemoveProduct = index => {
-    const newSelectedProducts = selectedProducts.filter((_, i) => i !== index);
-    setSelectedProducts(newSelectedProducts);
-    updateServiceFromProducts(newSelectedProducts);
-  };
-
   const updateServiceFromProducts = products => {
-    const contentItems = products.map(p => `${p.quantity} ${p.name}`);
+    const contentItems = products.map(p =>
+      p.isCustom ? `${p.quantity} ${p.name}` : `${p.quantity} ${p.name}`
+    );
     const totalPrice = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
 
     setFormData(prev => ({
@@ -184,22 +215,31 @@ const ServiceManager = () => {
   };
 
   const reconstructSelectedProducts = (contentItems, productsList) => {
-    const reconstructed = contentItems
+    return contentItems
       .map(item => {
         const parsed = parseContentItemQuantity(item);
         if (!parsed) return null;
 
+        // Buscar en la lista de productos
         const product = findProductByName(parsed.productName, productsList);
-        if (!product) return null;
 
+        if (product) {
+          return {
+            ...product,
+            quantity: parsed.quantity,
+          };
+        }
+
+        // Si no se encuentra en la lista de productos, asumir que es personalizado
         return {
-          ...product,
+          id: `custom-${Date.now()}`, // Generar un nuevo ID para elementos personalizados
+          name: parsed.productName,
           quantity: parsed.quantity,
+          price: 0, // No se puede inferir el precio aquí, debería recuperarse de otra forma si es posible
+          isCustom: true,
         };
       })
       .filter(item => item !== null);
-
-    return reconstructed;
   };
 
   const handleEditService = service => {
@@ -213,11 +253,19 @@ const ServiceManager = () => {
       newCategoryId: service.category_id,
     });
 
-    // Reconstruir los productos seleccionados
+    // Reconstruir productos seleccionados incluyendo personalizados
     const reconstructedProducts = reconstructSelectedProducts(service.contentItems, products);
     setSelectedProducts(reconstructedProducts);
+
     setEditingService(service);
     scrollToTop();
+  };
+
+  const handleCustomItemChange = (field, value) => {
+    setCurrentCustomItem(prev => ({
+      ...prev,
+      [field]: field === 'quantity' ? parseInt(value) || 1 : value,
+    }));
   };
 
   if (error)
@@ -256,7 +304,7 @@ const ServiceManager = () => {
             </div>
           )}
           {/* Formulario de creación/edición */}
-          <div className="bg-white rounded-xl shadow-lg p-4 w-full md:-mt-1">
+          <div className="bg-white rounded-xl shadow-lg p-2 md:p-4 w-full md:-mt-1">
             <h2 className="flex justify-center text-gray-700 text-lg md:text-xl font-semibold mb-4">
               {editingService ? 'Editar Servicio' : 'Crear Nuevo Servicio'}
             </h2>
@@ -317,38 +365,93 @@ const ServiceManager = () => {
                 </select>
               </div>
 
-              {/* Selector de productos */}
+              {/* Selector de productos y elementos personalizados */}
               <div className="space-y-4">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-3 md:space-y-0 md:space-x-4">
-                  <h3 className="block py-2 text-gray-700 text-xl font-bold text-center md:text-left order-2 md:order-1">
-                    Productos incluidos
+                <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0 md:space-x-4">
+                  <h3 className="block py-1 text-gray-700 text-xl font-bold text-center md:text-left ">
+                    Lista de Productos
                   </h3>
+                  <div className="flex space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsProductModalOpen(true)}
+                      className="px-4 py-2 mb-1 flex items-center justify-center bg-brightColor text-white rounded-lg hover:bg-opacity-90"
+                    >
+                      <Plus className="w-5 h-5 mr-2" />
+                      Añadir Producto
+                    </button>
+                  </div>
+                </div>
+
+                {/* Formulario para añadir elementos personalizados */}
+                <div className="grid grid-cols-1 md:grid-cols-[1fr_3fr_2fr_auto] gap-2 mb-4">
+                  <input
+                    type="number"
+                    min="1"
+                    value={currentCustomItem.quantity}
+                    onChange={e => handleCustomItemChange('quantity', e.target.value)}
+                    placeholder="Cantidad"
+                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                  />
+                  <input
+                    type="text"
+                    value={currentCustomItem.name}
+                    onChange={e => handleCustomItemChange('name', e.target.value)}
+                    placeholder="Nombre del elemento"
+                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={currentCustomItem.price}
+                    onChange={e => handleCustomItemChange('price', e.target.value)}
+                    placeholder="Precio"
+                    className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
+                  />
                   <button
                     type="button"
-                    onClick={() => setIsProductModalOpen(true)}
-                    className="px-6 py-2 flex items-center justify-center bg-brightColor text-white text-lg rounded-lg hover:bg-opacity-90 order-1 md:order-2"
+                    onClick={handleAddCustomContentItem}
+                    className="w-full px-4 py-2 bg-brightColor text-white rounded-lg hover:bg-opacity-90 flex items-center justify-center"
+                    disabled={!currentCustomItem.name}
                   >
                     <Plus className="w-5 h-5 mr-2" />
-                    Añadir Producto
+                    Añadir
                   </button>
                 </div>
 
-                {/* Lista de productos seleccionados */}
+                {/* Lista de productos y elementos personalizados seleccionados */}
                 <div className="space-y-3">
-                  {selectedProducts.map((product, index) => (
-                    <div key={index} className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg">
+                  {selectedProducts.map((item, index) => (
+                    <div
+                      key={item.id || index}
+                      className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg"
+                    >
                       <input
                         type="number"
                         min="1"
-                        value={product.quantity}
-                        onChange={e => handleUpdateQuantity(index, e.target.value)}
+                        value={item.quantity}
+                        onChange={e => {
+                          const newSelectedProducts = [...selectedProducts];
+                          newSelectedProducts[index].quantity = parseInt(e.target.value) || 1;
+                          setSelectedProducts(newSelectedProducts);
+                          updateServiceFromProducts(newSelectedProducts);
+                        }}
                         className="w-16 rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-0.5"
                       />
-                      <span className="flex-1">{product.name}</span>
-                      <span className="text-gray-600">${product.price * product.quantity}</span>
+                      <span className="flex-1">{item.name}</span>
+                      <span className="text-gray-600">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
                       <button
                         type="button"
-                        onClick={() => handleRemoveProduct(index)}
+                        onClick={() => {
+                          const newSelectedProducts = selectedProducts.filter(
+                            (_, i) => i !== index
+                          );
+                          setSelectedProducts(newSelectedProducts);
+                          updateServiceFromProducts(newSelectedProducts);
+                        }}
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -356,6 +459,7 @@ const ServiceManager = () => {
                     </div>
                   ))}
                 </div>
+
                 {/* Modal de selección de productos */}
                 <ProductSelectorModal
                   isOpen={isProductModalOpen}
@@ -444,14 +548,15 @@ const ServiceManager = () => {
 
           {/* Lista de servicios */}
           <div className="w-full">
-            <h2 className="text-2xl font-bold mb-6">Servicios Existentes</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+            <h2 className="text-2xl font-bold mb-3 md:mb-2">Servicios Existentes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
               {services.map(service => (
-                <div key={service.id} className="bg-white rounded-lg shadow-md p-6 w-full">
-                  <div className="flex justify-between items-start mb-4">
+                <div key={service.id} className="bg-white rounded-xl shadow-xl border-2 p-6 w-full">
+                  <div className="flex justify-between items-start mb-1">
                     <div>
                       <h3 className="text-lg font-semibold">{service.title}</h3>
-                      <p className="text-sm text-gray-500">{service.subtitle}</p>
+                      <p className="text-md text-gray-900">{service.subtitle}</p>
+                      <p className="text-sm text-gray-500">{service.description}</p>
                     </div>
                     <div className="flex gap-2">
                       <button

@@ -14,7 +14,14 @@ const axiosInstance = axios.create({
 // Interceptor para añadir el token a todas las peticiones
 axiosInstance.interceptors.request.use(
   config => {
-    const publicEndpoints = ['/menu/all', '/user/login', '/banner', '/about']; // Lista de endpoints públicos
+    const publicEndpoints = [
+      '/menu/all',
+      '/user/login',
+      '/banner',
+      '/about',
+      '/business/info',
+      '/category/all',
+    ]; // Lista de endpoints públicos
     if (!publicEndpoints.includes(config.url)) {
       const token = authService.getToken();
       if (token) {

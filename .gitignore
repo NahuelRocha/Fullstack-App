@@ -24,6 +24,7 @@ backend/!.mvn/wrapper/maven-wrapper.jar
 backend/!**/src/main/**/target/
 backend/!**/src/test/**/target/
 backend/!**/src/main/resources/META-INF/
+backend/**/src/main/resources/META-INF/
 backend/**/src/main/resources/META-INF.native-image/
 
 # Frontend specific

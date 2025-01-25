@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link as ScrollLink, scroller } from 'react-scroll';
+import { scroller } from 'react-scroll';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import { Menu, X, Home, PackageSearch, Info, LayoutDashboard, LogIn, LogOut } from 'lucide-react';

@@ -23,9 +23,9 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Iniciar sesión</h2>
+          <h2 className="mt-5 text-center text-3xl font-extrabold text-gray-900">Iniciar sesión</h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-7 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="username" className="sr-only">
@@ -36,7 +36,7 @@ const Login = () => {
                 name="username"
                 type="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-brightColor focus:border-brightColor focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-3 md:py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-brightColor focus:border-brightColor focus:z-10 text-lg md:text-sm"
                 placeholder="Email"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
@@ -51,7 +51,7 @@ const Login = () => {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-brightColor focus:border-brightColor focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-3 md:py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-brightColor focus:border-brightColor focus:z-10 text-lg md:text-sm"
                 placeholder="Contraseña"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -64,7 +64,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-brightColor hover:bg-brightColor/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brightColor"
+              className="group relative w-full flex justify-center py-3 md:py-2 px-4 border border-transparent  text-md md:text-sm font-medium rounded-md text-white bg-brightColor hover:bg-brightColor/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brightColor"
             >
               Iniciar sesión
             </button>

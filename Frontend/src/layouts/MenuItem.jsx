@@ -32,7 +32,7 @@ const MenuItem = ({ item }) => {
   return (
     <div className="bg-white space-y-1 rounded-xl shadow-lg overflow-hidden flex flex-col h-[430px] md:mb-5">
       {/* Contenedor de imagen con proporción fija */}
-      <div className="relative w-full aspect-[16/5] -mb-2">
+      <div className="relative w-full aspect-[16/6] -mb-2">
         {item.imageUrls.map((url, index) => (
           <img
             key={index}

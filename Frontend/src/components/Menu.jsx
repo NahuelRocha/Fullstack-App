@@ -115,7 +115,7 @@ const Menu = () => {
         <motion.h1
           initial={{ opacity: 0, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-semibold text-center mt-2 mb-1"
+          className="text-3xl font-semibold text-center mt-2 mb-0 md:mb-1"
         >
           Nuestro Menú
         </motion.h1>
@@ -155,14 +155,14 @@ const Menu = () => {
               <motion.h2
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-3xl font-semibold text-brightColor flex items-center"
+                className="text-3xl font-semibold -mt-3 text-brightColor flex items-center"
               >
                 <span className="mr-2">{groupedItems[activeCategory].display}</span>
                 <div className="h-px bg-brightColor flex-grow opacity-20"></div>
               </motion.h2>
 
               <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-1"
                 variants={containerVariants}
               >
                 {groupedItems[activeCategory].items.map((item, index) => (

@@ -213,7 +213,7 @@ const ImageManager = () => {
           </div>
         ) : (
           <div className="h-[calc(2*(100vw/4*0.9))] overflow-y-auto">
-            <div className="grid grid-cols-4 gap-4 auto-rows-fr">
+            <div className="grid grid-cols-6 gap-4 auto-rows-fr">
               {images.map(image => (
                 <div
                   key={image.id}
@@ -225,17 +225,16 @@ const ImageManager = () => {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300">
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <button
                         onClick={e => {
                           e.preventDefault();
                           setSelectedImage(image);
                           setShowDeleteDialog(true);
                         }}
-                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200 flex items-center space-x-2"
+                        className="bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors duration-200 flex items-center space-x-2"
                       >
                         <X className="w-4 h-4" />
-                        <span>Eliminar</span>
                       </button>
                     </div>
                   </div>
