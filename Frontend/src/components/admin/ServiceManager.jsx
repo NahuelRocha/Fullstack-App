@@ -23,7 +23,7 @@ const ServiceManager = () => {
     newCategoryId: 1,
   });
   const [currentCustomItem, setCurrentCustomItem] = useState({
-    quantity: 1,
+    quantity: '',
     name: '',
     price: 0,
   });
@@ -264,7 +264,7 @@ const ServiceManager = () => {
   const handleCustomItemChange = (field, value) => {
     setCurrentCustomItem(prev => ({
       ...prev,
-      [field]: field === 'quantity' ? parseInt(value) || 1 : value,
+      [field]: field === 'quantity' ? value || '' : value,
     }));
   };
 
@@ -387,9 +387,8 @@ const ServiceManager = () => {
                 <div className="grid grid-cols-1 md:grid-cols-[1fr_3fr_2fr_auto] gap-2 mb-4">
                   <input
                     type="number"
-                    min="1"
                     value={currentCustomItem.quantity}
-                    onChange={e => handleCustomItemChange('quantity', e.target.value)}
+                    onChange={e => handleCustomItemChange('quantity', e.target.valueAsNumber)}
                     placeholder="Cantidad"
                     className="w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 p-2"
                   />
@@ -433,7 +432,7 @@ const ServiceManager = () => {
                         value={item.quantity}
                         onChange={e => {
                           const newSelectedProducts = [...selectedProducts];
-                          newSelectedProducts[index].quantity = parseInt(e.target.value) || 1;
+                          newSelectedProducts[index].quantity = parseInt(e.target.value);
                           setSelectedProducts(newSelectedProducts);
                           updateServiceFromProducts(newSelectedProducts);
                         }}
