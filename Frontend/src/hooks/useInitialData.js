@@ -7,6 +7,20 @@ export const useInitialData = () => {
   const [availableImages, setAvailableImages] = useState([]);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const loadMoreProducts = async (page = 0, size = 10) => {
+    try {
+      const productsData = await productService.getAllProducts(page, size);
+      setProducts(productsData.content);
+      setTotalPages(productsData.totalPages);
+      setCurrentPage(page);
+    } catch (err) {
+      console.error('Error loading more products:', err);
+      setError('Error cargando más productos. Por favor, intente nuevamente.');
+    }
+  };
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -18,9 +32,9 @@ export const useInitialData = () => {
           return [];
         });
 
-        const productsPromise = productService.getAllProducts().catch(err => {
+        const productsPromise = productService.getAllProducts(0, 10).catch(err => {
           console.log('Error loading products:', err);
-          return { content: [] };
+          return { content: [], totalPages: 0 };
         });
 
         const imagesPromise = imageService.getAllImages().catch(err => {
@@ -41,7 +55,8 @@ export const useInitialData = () => {
         ]);
 
         setServices(servicesData);
-        setProducts(productsData.content || productsData || []);
+        setProducts(productsData.content || []);
+        setTotalPages(productsData.totalPages || 0);
         setAvailableImages(imagesData);
         setCategories(categoriesData);
       } catch (err) {
@@ -53,5 +68,16 @@ export const useInitialData = () => {
     loadInitialData();
   }, []);
 
-  return { services, setServices, products, availableImages, categories, error };
+  return {
+    services,
+    setServices,
+    products,
+    availableImages,
+    categories,
+    error,
+    loadMoreProducts,
+    currentPage,
+    totalPages,
+    setCurrentPage, // Exportar la función para cambiar la página
+  };
 };

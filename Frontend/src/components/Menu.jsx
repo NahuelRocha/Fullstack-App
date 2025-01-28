@@ -4,7 +4,6 @@ import MenuItem from '../layouts/MenuItem';
 import { menuService } from '../services/api';
 
 const Menu = () => {
-  const [menuItems, setMenuItems] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [groupedItems, setGroupedItems] = useState({});
@@ -14,7 +13,6 @@ const Menu = () => {
     const fetchMenuItems = async () => {
       try {
         const data = await menuService.getAllMenuItems();
-        setMenuItems(data);
 
         const grouped = data.reduce((acc, item) => {
           const categoryKey = item.category.toLowerCase();
@@ -124,7 +122,7 @@ const Menu = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
               onClick={() => handleCategoryChange(key)}
-              className={`whitespace-nowrap px-6 py-2 -mt-1 rounded-full transition-all ${
+              className={`whitespace-nowrap px-10 py-1 -mt-1 rounded-full transition-all ${
                 activeCategory === key
                   ? 'bg-brightColor text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

@@ -13,7 +13,7 @@ export const authService = {
       localStorage.setItem('token', token);
       return token;
     } catch (error) {
-      throw new Error(' ');
+      throw new Error('Error al iniciar sesión: ' + error.message);
     }
   },
 

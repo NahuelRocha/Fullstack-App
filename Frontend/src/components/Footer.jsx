@@ -83,20 +83,19 @@ const Footer = () => {
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-customColor">Menu</h2>
               <nav className="space-y-4">
-                <Link to="/menu">
-                  <a
-                    href="/menu"
-                    className="flex items-center gap-2 hover:text-customColor transition-colors duration-300"
-                  >
-                    <Menu className="w-4 h-4" />
-                    <span>Ver Menú</span>
-                  </a>
+                <Link
+                  to="/menu"
+                  className="flex items-center gap-2 hover:text-customColor transition-colors duration-300"
+                >
+                  <Menu className="w-4 h-4" />
+                  <span>Ver Menú</span>
                 </Link>
-                <Link to="/custom">
-                  <a className="flex items-center gap-2 hover:text-customColor transition-colors duration-300">
-                    <Menu className="w-4 h-4" />
-                    <span>Arma tu pedido</span>
-                  </a>
+                <Link
+                  to="/custom"
+                  className="flex items-center gap-2 hover:text-customColor transition-colors duration-300"
+                >
+                  <Menu className="w-4 h-4" />
+                  <span>Arma tu pedido</span>
                 </Link>
               </nav>
             </div>

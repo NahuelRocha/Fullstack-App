@@ -29,7 +29,7 @@ const MenuItem = ({ item }) => {
   };
 
   return (
-    <div className="bg-white space-y-1 rounded-xl shadow-lg overflow-hidden flex flex-col min-h-[430px] md:mb-5">
+    <div className="bg-white space-y-1 rounded-xl shadow-lg overflow-hidden flex flex-col min-h-[480px] md:mb-5">
       {/* Contenedor de imagen con proporción fija */}
       <div className="relative w-full aspect-[16/7] md:aspect-[16/5.5] -mb-2">
         {/* Icono de descuento superpuesto */}
@@ -50,10 +50,10 @@ const MenuItem = ({ item }) => {
       </div>
 
       {/* Contenido de texto */}
-      <div className="p-2 flex-1 overflow-y-auto">
+      <div className="p-3 flex-1 overflow-y-auto">
         {/* Título y subtítulo */}
         <div className="space-y-1">
-          <h3 className="text-xl ml-2  mt-1 font-bold text-gray-900">{item.title}</h3>
+          <h3 className="text-2xl ml-1 mb-2  mt-1 font-bold text-gray-900">{item.title}</h3>
           <h4 className="text-md font-semibold text-gray-800">{item.subtitle}</h4>
         </div>
 
@@ -61,11 +61,11 @@ const MenuItem = ({ item }) => {
         <p className="text-md mb-1 text-gray-600 leading-relaxed">{item.description}</p>
 
         {/* Lista de contenidos */}
-        <ul className="space-y-0 grid grid-cols-1">
-          {item.contentItems.slice(0, showMore ? undefined : 7).map((content, index) => (
+        <ul className="space-y-0 grid grid-cols-1 -mb-3">
+          {item.contentItems.slice(0, showMore ? undefined : 8).map((content, index) => (
             <li key={index} className="flex items-start">
               <span className="ml-2 text-brightColor mr-2">•</span>
-              <span className="text-gray-600">{content}</span>
+              <span className="text-gray-800 text-md md:text-sm">{content}</span>
             </li>
           ))}
         </ul>
@@ -73,7 +73,7 @@ const MenuItem = ({ item }) => {
         {!showMore && item.contentItems.length > 8 && (
           <button
             onClick={handleShowMoreClick}
-            className="text-sm bg-brightColor text-white px-3 mt-2 ml-1 rounded-full hover:bg-opacity-90 transition-colors"
+            className="text-sm bg-brightColor text-white px-3 mt-6 ml-1 rounded-full hover:bg-opacity-90 transition-colors"
           >
             Ver más...
           </button>
@@ -81,8 +81,8 @@ const MenuItem = ({ item }) => {
       </div>
 
       {/* Precio y botón */}
-      <div className="mt-auto p-4 border-t border-gray-200">
-        <div className="flex items-center justify-between">
+      <div className="mt-auto p-2 border-t border-gray-200 mx-4">
+        <div className="flex items-center justify-between my-2 md:my-0">
           <div className="text-2xl font-bold text-brightColor">${item.price}</div>
           <button
             onClick={handleWhatsAppClick}

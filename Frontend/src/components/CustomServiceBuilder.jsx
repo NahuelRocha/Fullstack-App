@@ -13,11 +13,11 @@ const CustomServiceBuilder = () => {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const response = await productService.getAvailableProducts(0, 100);
+        const response = await productService.getAvailableProducts(0, 50);
         setProducts(response.content);
         setLoading(false);
       } catch (err) {
-        setError(err + 'Error cargando productos. Por favor, intente nuevamente.');
+        setError(err.message || 'Error cargando productos. Por favor, intente nuevamente.');
         setLoading(false);
       }
     };

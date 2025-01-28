@@ -7,7 +7,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import { PrivateRoute } from './components/PrivateRoute';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './context/AuthProvider';
 import { LandingPage } from './components/LandingPage';
 import SplashScreen from './components/SplashScreen';
 import { useState } from 'react';

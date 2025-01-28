@@ -2,7 +2,17 @@ import { useState } from 'react';
 import { Search, X } from 'lucide-react';
 import PropTypes from 'prop-types';
 
-const ProductSelectorModal = ({ isOpen, onClose, products, onSelectProduct, selectedProducts }) => {
+const ProductSelectorModal = ({
+  isOpen,
+  onClose,
+  products,
+  onSelectProduct,
+  selectedProducts,
+  loadMoreProducts,
+  currentPage,
+  totalPages,
+  setCurrentPage,
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
 
@@ -21,6 +31,13 @@ const ProductSelectorModal = ({ isOpen, onClose, products, onSelectProduct, sele
       return 0;
     });
 
+  const handlePageChange = (page, e) => {
+    e.preventDefault(); // Prevenir el comportamiento por defecto
+    e.stopPropagation(); // Detener la propagación
+    setCurrentPage(page);
+    loadMoreProducts(page);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -29,7 +46,7 @@ const ProductSelectorModal = ({ isOpen, onClose, products, onSelectProduct, sele
         {/* Header */}
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-xl font-semibold">Seleccionar Producto</h2>
-          <button onClick={onClose} className="p-2 hover:text-gray-600">
+          <button type="button" onClick={onClose} className="p-2 hover:text-gray-600">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -61,6 +78,7 @@ const ProductSelectorModal = ({ isOpen, onClose, products, onSelectProduct, sele
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredProducts.map(product => (
               <button
+                type="button"
                 key={product.id}
                 onClick={() => {
                   onSelectProduct(product);
@@ -78,6 +96,24 @@ const ProductSelectorModal = ({ isOpen, onClose, products, onSelectProduct, sele
           {filteredProducts.length === 0 && (
             <div className="text-center text-gray-500 py-8">No se encontraron productos</div>
           )}
+        </div>
+
+        {/* Pagination */}
+        <div className="p-4 border-t flex justify-center flex-wrap gap-2">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={e => handlePageChange(i, e)}
+              className={`px-3 py-1 rounded ${
+                currentPage === i
+                  ? 'bg-brightColor text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -100,6 +136,10 @@ ProductSelectorModal.propTypes = {
       id: PropTypes.number.isRequired,
     })
   ).isRequired,
+  loadMoreProducts: PropTypes.func.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  setCurrentPage: PropTypes.func.isRequired,
 };
 
 export default ProductSelectorModal;

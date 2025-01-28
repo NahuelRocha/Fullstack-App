@@ -62,10 +62,6 @@ const ProductManager = () => {
     return parseFloat(standardizedString);
   };
 
-  const formatLocalNumber = number => {
-    return number.toString().replace('.', ',');
-  };
-
   const handleNewProduct = () => {
     setEditingProduct(null);
     setFormData(initialFormState);

@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, X, Edit, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, X, Edit } from 'lucide-react';
 import { menuService } from '../../services/api';
 import ProductSelectorModal from '../ProductSelectorModal';
 import { useInitialData } from '../../hooks/useInitialData';
 import { useServiceForm } from '../../hooks/useServiceForm';
-import {
-  parseContentItemQuantity,
-  findProductByName,
-  reconstructSelectedProducts,
-} from '../../utils/serviceUtils';
+import { reconstructSelectedProducts } from '../../utils/serviceUtils';
 
 const ServiceManager = () => {
   const [error, setError] = useState(null);
@@ -22,6 +18,10 @@ const ServiceManager = () => {
     availableImages,
     categories,
     error: initialError,
+    loadMoreProducts,
+    currentPage,
+    totalPages,
+    setCurrentPage,
   } = useInitialData();
 
   const initialFormState = {
@@ -83,8 +83,11 @@ const ServiceManager = () => {
     e.preventDefault();
     try {
       const updatedPrice = Math.round(formData.price);
+      let updatedService;
+
       if (editingService) {
-        await menuService.updateMenuItem({
+        // Actualizar servicio existente
+        updatedService = await menuService.updateMenuItem({
           id: editingService.id,
           updates: {
             title: formData.title,
@@ -96,14 +99,23 @@ const ServiceManager = () => {
             category: formData.category,
           },
         });
+
+        // Actualizar el estado local
+        setServices(prevServices =>
+          prevServices.map(service => (service.id === editingService.id ? updatedService : service))
+        );
         setSuccessMessage('Servicio actualizado con éxito');
       } else {
-        await menuService.createMenuItem(formData);
+        // Crear nuevo servicio
+        const newService = await menuService.createMenuItem(formData);
+        // Actualizar el estado local añadiendo el nuevo servicio
+        setServices(prevServices => [...prevServices, newService]);
         setSuccessMessage('Servicio creado con éxito');
       }
 
       resetForm();
-      scrollToTop(); // Añadir scroll al top
+      setEditingService(null);
+      scrollToTop();
 
       setTimeout(() => setSuccessMessage(null), 2000);
     } catch (error) {
@@ -188,7 +200,6 @@ const ServiceManager = () => {
                     value={formData.title}
                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                     className="mt-1 w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 py-1 px-2"
-                    required
                   />
                 </div>
 
@@ -199,7 +210,6 @@ const ServiceManager = () => {
                     value={formData.subtitle}
                     onChange={e => setFormData({ ...formData, subtitle: e.target.value })}
                     className="mt-1 w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 py-1 px-2"
-                    required
                   />
                 </div>
               </div>
@@ -211,7 +221,6 @@ const ServiceManager = () => {
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   className="mt-1 w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 py-1 px-2"
                   rows="3"
-                  required
                 />
               </div>
 
@@ -221,7 +230,6 @@ const ServiceManager = () => {
                   value={formData.newCategoryId}
                   onChange={e => setFormData({ ...formData, newCategoryId: e.target.value })}
                   className="mt-1 w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 py-2 px-2"
-                  required
                 >
                   <option value="" className="text-md">
                     Seleccione una categoría
@@ -347,6 +355,10 @@ const ServiceManager = () => {
                   products={products}
                   selectedProducts={selectedProducts}
                   onSelectProduct={handleAddProduct}
+                  loadMoreProducts={loadMoreProducts}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  setCurrentPage={page => setCurrentPage(page)} // Pasar la función para cambiar la página
                 />
               </div>
 

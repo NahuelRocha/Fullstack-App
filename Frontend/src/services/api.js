@@ -21,6 +21,7 @@ axiosInstance.interceptors.request.use(
       '/about',
       '/business/info',
       '/category/all',
+      '/product',
     ]; // Lista de endpoints públicos
     if (!publicEndpoints.includes(config.url)) {
       const token = authService.getToken();
@@ -39,8 +40,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   response => response,
   error => {
-    if (error.response?.status === 401) {
-      // Token expirado o inválido
+    if (error.response?.status === 401 && window.location.pathname !== '/login') {
       authService.logout();
       window.location.href = '/login';
     }

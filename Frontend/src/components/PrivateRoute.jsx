@@ -7,7 +7,7 @@ export const PrivateRoute = ({ children }) => {
   const location = useLocation();
 
   if (isLoading) {
-    return <div>Cargando...</div>; // Puedes crear un componente de loading más elaborado
+    return <div>Cargando...</div>;
   }
 
   if (!isAuthenticated) {
