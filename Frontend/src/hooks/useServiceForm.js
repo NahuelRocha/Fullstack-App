@@ -28,6 +28,7 @@ export const useServiceForm = initialState => {
 
   const handleAddProduct = product => {
     const updatedSelectedProducts = [...selectedProducts, { ...product, quantity: 1 }];
+
     setSelectedProducts(updatedSelectedProducts);
     updateServiceFromProducts(updatedSelectedProducts);
   };

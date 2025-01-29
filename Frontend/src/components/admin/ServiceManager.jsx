@@ -4,7 +4,11 @@ import { menuService } from '../../services/api';
 import ProductSelectorModal from '../ProductSelectorModal';
 import { useInitialData } from '../../hooks/useInitialData';
 import { useServiceForm } from '../../hooks/useServiceForm';
-import { reconstructSelectedProducts } from '../../utils/serviceUtils';
+import {
+  reconstructSelectedProducts,
+  formatContentItems,
+  calculateTotalPrice,
+} from '../../utils/serviceUtils';
 
 const ServiceManager = () => {
   const [error, setError] = useState(null);
@@ -15,6 +19,7 @@ const ServiceManager = () => {
     services,
     setServices,
     products,
+    allProducts,
     availableImages,
     categories,
     error: initialError,
@@ -31,7 +36,7 @@ const ServiceManager = () => {
     price: 0,
     contentItems: [],
     imageUrls: [],
-    newCategoryId: 1,
+    category: 1,
   };
 
   const {
@@ -52,21 +57,37 @@ const ServiceManager = () => {
   useEffect(() => {
     const productContentItems = selectedProducts.map(p => `${p.quantity} ${p.name}`);
     const allContentItems = [...productContentItems];
-
+    console.log('Buscando precio para:', selectedProducts);
     setFormData(prev => ({
       ...prev,
       contentItems: allContentItems,
     }));
-  }, [selectedProducts]);
+  }, [selectedProducts, setFormData]);
+
+  useEffect(() => {
+    if (selectedProducts.length > 0) {
+      const productContentItems = selectedProducts.map(p => `${p.quantity} ${p.name}`);
+      const allContentItems = [...productContentItems];
+      setFormData(prev => ({
+        ...prev,
+        contentItems: allContentItems,
+      }));
+    }
+  }, [selectedProducts, setFormData]);
+
+  useEffect(() => {
+    if (editingService) {
+      const reconstructedProducts = reconstructSelectedProducts(
+        editingService.contentItems,
+        allProducts // Usar allProducts en lugar de products
+      );
+      setSelectedProducts(reconstructedProducts);
+    }
+  }, [editingService, allProducts]);
 
   const updateServiceFromProducts = products => {
-    const contentItems = products.map(p =>
-      p.isCustom ? `${p.quantity} ${p.name}` : `${p.quantity} ${p.name}`
-    );
-
-    // Calcular el precio total solo si el usuario no ha editado manualmente el precio
-    const isPriceManuallyEdited = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
-    const totalPrice = isPriceManuallyEdited;
+    const contentItems = formatContentItems(products);
+    const totalPrice = calculateTotalPrice(products);
 
     setFormData(prev => ({
       ...prev,
@@ -83,32 +104,26 @@ const ServiceManager = () => {
     e.preventDefault();
     try {
       const updatedPrice = Math.round(formData.price);
+      const formattedContentItems = formatContentItems(selectedProducts);
+
       let updatedService;
 
       if (editingService) {
-        // Actualizar servicio existente
         updatedService = await menuService.updateMenuItem({
           id: editingService.id,
           updates: {
-            title: formData.title,
-            subtitle: formData.subtitle,
-            description: formData.description,
+            ...formData,
             price: updatedPrice,
-            contentItems: formData.contentItems,
-            imageUrls: formData.imageUrls,
-            category: formData.category,
+            contentItems: formattedContentItems,
           },
         });
 
-        // Actualizar el estado local
         setServices(prevServices =>
           prevServices.map(service => (service.id === editingService.id ? updatedService : service))
         );
         setSuccessMessage('Servicio actualizado con éxito');
       } else {
-        // Crear nuevo servicio
         const newService = await menuService.createMenuItem(formData);
-        // Actualizar el estado local añadiendo el nuevo servicio
         setServices(prevServices => [...prevServices, newService]);
         setSuccessMessage('Servicio creado con éxito');
       }
@@ -124,20 +139,22 @@ const ServiceManager = () => {
   };
 
   const handleEditService = service => {
-    setFormData({
+    console.log('Contenido antes de reconstrucción:', service.contentItems);
+    const reconstructedProducts = reconstructSelectedProducts(service.contentItems, allProducts); // Cambiar products por allProducts
+    console.log('Productos reconstruidos:', reconstructedProducts);
+    setFormData(prev => ({
+      ...prev,
       title: service.title,
       subtitle: service.subtitle,
       description: service.description,
       price: service.price,
       contentItems: service.contentItems,
       imageUrls: service.imageUrls,
-      newCategoryId: service.category_id,
-    });
-
-    // Reconstruir productos seleccionados incluyendo personalizados
-    const reconstructedProducts = reconstructSelectedProducts(service.contentItems, products);
+      category: service.category_id,
+    }));
+    console.log('ANTES de setSelectedProducts:', selectedProducts);
     setSelectedProducts(reconstructedProducts);
-
+    console.log('DESPUÉS de setSelectedProducts:', reconstructedProducts);
     setEditingService(service);
     scrollToTop();
   };
@@ -422,10 +439,10 @@ const ServiceManager = () => {
                     type="number"
                     value={formData.price}
                     onChange={e => {
-                      const newPrice = parseFloat(e.target.value);
+                      const newPrice = e.target.value === '' ? '' : parseFloat(e.target.value);
                       setFormData(prev => ({
                         ...prev,
-                        price: isNaN(newPrice) ? 0 : newPrice, // Evitar NaN si el campo está vacío
+                        price: isNaN(newPrice) ? '' : newPrice,
                       }));
                     }}
                     className="ml-2 w-32 font-medium rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 py-1 px-2"

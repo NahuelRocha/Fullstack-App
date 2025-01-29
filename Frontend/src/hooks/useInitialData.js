@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { menuService, productService, imageService, categoryService } from '../services/api';
 
 export const useInitialData = () => {
@@ -9,18 +9,45 @@ export const useInitialData = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [allProducts, setAllProducts] = useState([]);
 
-  const loadMoreProducts = async (page = 0, size = 10) => {
+  // Función para cargar los productos de una página específica
+  const loadMoreProducts = useCallback(async (page = 0, size = 10) => {
     try {
       const productsData = await productService.getAllProducts(page, size);
+
+      // Actualizar los productos de la página actual
       setProducts(productsData.content);
+
+      // Mantener un registro de todos los productos que hemos visto
+      setAllProducts(prevAllProducts => {
+        const newProducts = [...prevAllProducts];
+        productsData.content.forEach(product => {
+          const existingIndex = newProducts.findIndex(p => p.id === product.id);
+          if (existingIndex >= 0) {
+            newProducts[existingIndex] = product;
+          } else {
+            newProducts.push(product);
+          }
+        });
+        return newProducts;
+      });
+
       setTotalPages(productsData.totalPages);
       setCurrentPage(page);
     } catch (err) {
       console.error('Error loading more products:', err);
       setError('Error cargando más productos. Por favor, intente nuevamente.');
     }
-  };
+  }, []);
+
+  // Función para obtener un producto por ID de la lista completa
+  const getProductById = useCallback(
+    id => {
+      return allProducts.find(p => p.id === id);
+    },
+    [allProducts]
+  );
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -32,7 +59,7 @@ export const useInitialData = () => {
           return [];
         });
 
-        const productsPromise = productService.getAllProducts(0, 10).catch(err => {
+        const productsPromise = productService.getAllProducts(0, 100).catch(err => {
           console.log('Error loading products:', err);
           return { content: [], totalPages: 0 };
         });
@@ -56,6 +83,7 @@ export const useInitialData = () => {
 
         setServices(servicesData);
         setProducts(productsData.content || []);
+        setAllProducts(productsData.content || []); // Añadir esta línea
         setTotalPages(productsData.totalPages || 0);
         setAvailableImages(imagesData);
         setCategories(categoriesData);
@@ -72,6 +100,8 @@ export const useInitialData = () => {
     services,
     setServices,
     products,
+    allProducts, // Exportamos allProducts
+    getProductById,
     availableImages,
     categories,
     error,

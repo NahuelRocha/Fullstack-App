@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import PropTypes from 'prop-types';
 
@@ -15,8 +15,16 @@ const ProductSelectorModal = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
+  const [localProducts, setLocalProducts] = useState([]);
 
-  const filteredProducts = products
+  // Efecto para mantener una copia local de los productos
+  useEffect(() => {
+    if (products) {
+      setLocalProducts(products);
+    }
+  }, [products]);
+
+  const filteredProducts = localProducts
     .filter(
       product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -31,17 +39,39 @@ const ProductSelectorModal = ({
       return 0;
     });
 
-  const handlePageChange = (page, e) => {
-    e.preventDefault(); // Prevenir el comportamiento por defecto
-    e.stopPropagation(); // Detener la propagación
-    setCurrentPage(page);
-    loadMoreProducts(page);
+  const handlePageChange = async (page, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Guardar los productos actuales antes de cargar la nueva página
+    const currentProducts = [...localProducts];
+
+    try {
+      // Cargar la nueva página
+      await loadMoreProducts(page);
+      setCurrentPage(page);
+    } catch (error) {
+      // Si hay un error, restaurar los productos anteriores
+      setLocalProducts(currentProducts);
+      console.error('Error al cargar más productos:', error);
+    }
+  };
+
+  // Manejar la selección de producto
+  const handleProductSelect = product => {
+    // Crear una copia del producto para evitar referencias mutables
+    const productCopy = {
+      ...product,
+      quantity: 1,
+    };
+    onSelectProduct(productCopy);
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed -inset-4 bg-black bg-opacity-50 flex items-center justify-center p-8 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-8 z-50">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="p-4 border-b flex justify-between items-center">
@@ -80,10 +110,7 @@ const ProductSelectorModal = ({
               <button
                 type="button"
                 key={product.id}
-                onClick={() => {
-                  onSelectProduct(product);
-                  onClose();
-                }}
+                onClick={() => handleProductSelect(product)}
                 className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors text-left"
               >
                 <div className="flex-1">

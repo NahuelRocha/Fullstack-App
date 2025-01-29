@@ -21,7 +21,6 @@ axiosInstance.interceptors.request.use(
       '/about',
       '/business/info',
       '/category/all',
-      '/product',
     ]; // Lista de endpoints públicos
     if (!publicEndpoints.includes(config.url)) {
       const token = authService.getToken();
