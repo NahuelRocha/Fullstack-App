@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Button from '../layouts/Button';
 import { bannerService } from '../services/api';
 import { useSlider } from '../hooks/useSlider';
+import Logo from '../assets/images/TEST.png';
 
 const Home = () => {
   const [bannerData, setBannerData] = useState({
@@ -41,7 +42,7 @@ const Home = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen mt-20 flex items-center justify-center">
         <div
           className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-gray-600"
           role="status"
@@ -54,68 +55,96 @@ const Home = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-red-500">
+      <div className="min-h-screen mt-20 flex items-center justify-center text-red-500">
         Error: {error}
       </div>
     );
   }
 
   if (!bannerData.slides.length) {
-    return <div className="min-h-screen flex items-center justify-center">No images available</div>;
+    return (
+      <div className="min-h-screen mt-20 flex items-center justify-center">No images available</div>
+    );
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Background Images Container */}
-      <div className="absolute inset-0 z-0">
-        {[currentIndex, nextIndex].map(index => (
-          <div
-            key={index}
-            className={`absolute inset-0 bg-center bg-no-repeat bg-cover transition-opacity duration-1000
-              ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
-            style={{
-              backgroundImage: `url(${bannerData.slides[index]?.url})`,
-              filter: 'brightness(1)',
-            }}
-          />
-        ))}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
-      </div>
-
-      {/* Content Container */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-5 lg:px-32">
-        <div className="w-full max-w-2xl space-y-5 text-center">
-          <div className="p-6 rounded-lg bg-black/40 backdrop-blur-sm">
-            <div className="flex flex-col items-center">
-              <h1 className="text-white font-semibold text-4xl md:text-4xl lg:text-6xl mb-4 drop-shadow-lg">
-                {bannerData.title}
-              </h1>
-              <p className="text-white font-medium text-lg md:text-xl lg:text-xl mb-6 drop-shadow-md w-full">
-                {bannerData.description}
-              </p>
-              <div className="mt-1">
-                <Button
-                  title="Haz tu pedido"
-                  className="transform transition-transform duration-300"
-                  scrollTarget="menu"
+    <div className="min-h-screen bg-white">
+      {/* Contenedor principal que ocupa toda la altura disponible después del navbar */}
+      <div className="h-[calc(100vh-6rem)] pt-36 md:pt-32 px-0">
+        {/* Contenedor flex para centrar todo */}
+        <div className="h-full flex items-center justify-center px-4 md:px-10">
+          {/* Grid de dos columnas perfectamente simétricas */}
+          <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+            {/* Columna izquierda - Logo y contenido */}
+            <div className="flex flex-col items-center justify-center space-y-2 md:space-y-1 px-2 md:px-10 mr-0 md:-mr-10 -mt-6">
+              {/* Logo container */}
+              <div className="w-40 h-48 md:w-48 md:h-48 -mb-9 md:-mb-5">
+                <img
+                  src={Logo}
+                  alt="Daniela Eventos Logo"
+                  className="w-full h-full object-contain"
                 />
+              </div>
+
+              {/* Contenido centrado */}
+              <div className="text-center max-w-lg space-y-1 md:space-y-1">
+                <h1 className="text-4xl md:text-4xl lg:text-6xl font-bold text-gray-800">
+                  {bannerData.title}
+                </h1>
+                <p className="text-lg md:text-lg text-gray-800 leading-relaxed">
+                  {bannerData.description}
+                </p>
+                <div className="pt-2">
+                  <Button
+                    title="Haz tu pedido"
+                    className="bg-brightColor text-white px-4 py-2 text-sm rounded-full hover:bg-opacity-90 transition-colors"
+                    scrollTarget="menu"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Columna derecha - Slider */}
+            <div className="flex items-center justify-center py-4 -mt-4 px-4 md:mt-0 mr-0 md:mr-6">
+              {/* Contenedor del slider */}
+              <div className="w-full max-w-2xl rounded-lg overflow-hidden shadow-2xl ml-0 md:-ml-10">
+                <div className="relative aspect-[6/7] md:aspect-[18/11] w-full overflow-hidden">
+                  {/* Slides con transición mejorada */}
+                  {[currentIndex, nextIndex].map((index, i) => (
+                    <div
+                      key={index}
+                      className={`absolute inset-0 transition-all duration-1000 ease-in-out
+                        ${i === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-110'}`}
+                    >
+                      <img
+                        src={bannerData.slides[index]?.url}
+                        alt={`Slide ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+
+                  {/* Dots Navigation */}
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+                    {bannerData.slides.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToNextSlide(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300
+                          ${
+                            index === currentIndex
+                              ? 'bg-customColor/80 scale-125'
+                              : 'bg-white/50 hover:bg-white/70'
+                          }`}
+                        aria-label={`Go to slide ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Dots Navigation */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
-        {bannerData.slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToNextSlide(index)}
-            className={`h-1 transition-all duration-300 rounded-full
-              ${index === currentIndex ? 'w-8 bg-white' : 'w-4 bg-white/50 hover:bg-white/70'}`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
       </div>
     </div>
   );

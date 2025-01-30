@@ -97,7 +97,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   return (
     <div className="fixed w-full z-50 top-0">
       <div className="bg-gradient-to-b from-gray-900 to-black/90 backdrop-blur-md shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-1">
           <div className="flex justify-between items-center h-16 md:h-16">
             {/* Logo */}
             <div
