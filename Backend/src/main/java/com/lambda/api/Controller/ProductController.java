@@ -19,7 +19,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody CreateProductDTO createProductDTO) {
 
         ProductDTO productDTO = productService.createNewProduct(createProductDTO);

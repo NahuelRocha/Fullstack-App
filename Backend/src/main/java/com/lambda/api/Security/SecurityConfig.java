@@ -69,7 +69,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/banner"),
             new AntPathRequestMatcher("/api/category/all"),
             new AntPathRequestMatcher("/api/menu/all"),
-            new AntPathRequestMatcher("/api/product", "GET"),
+            new AntPathRequestMatcher("/api/product"),
             new AntPathRequestMatcher("/api/about", "GET")
     );
     RequestMatcher adminUrls = new OrRequestMatcher(
@@ -86,7 +86,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/menu/create"),
             new AntPathRequestMatcher("/api/menu/delete/{id}"),
             new AntPathRequestMatcher("/api/menu/update"),
-            new AntPathRequestMatcher("/api/product", "POST"),
+            new AntPathRequestMatcher("/api/product/create"),
             new AntPathRequestMatcher("/api/product/{id}"),
             new AntPathRequestMatcher("/api/product/all", "GET"),
             new AntPathRequestMatcher("/api/about/update")

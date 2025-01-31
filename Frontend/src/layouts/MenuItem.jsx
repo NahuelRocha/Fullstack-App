@@ -62,7 +62,7 @@ const MenuItem = ({ item }) => {
 
         {/* Lista de contenidos */}
         <ul className="space-y-0 grid grid-cols-1 -mb-3">
-          {item.contentItems.slice(0, showMore ? undefined : 8).map((content, index) => (
+          {item.contentItems.slice(0, showMore ? undefined : 7).map((content, index) => (
             <li key={index} className="flex items-start">
               <span className="ml-2 text-brightColor mr-2">•</span>
               <span className="text-gray-800 text-md md:text-sm">{content}</span>
@@ -70,7 +70,7 @@ const MenuItem = ({ item }) => {
           ))}
         </ul>
 
-        {!showMore && item.contentItems.length > 8 && (
+        {!showMore && item.contentItems.length > 7 && (
           <button
             onClick={handleShowMoreClick}
             className="text-sm bg-brightColor text-white px-3 mt-6 ml-1 rounded-full hover:bg-opacity-90 transition-colors"

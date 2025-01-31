@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { scroller } from 'react-scroll';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import logo from '../assets/images/logo.png';
+import logo from '../assets/images/pr.png';
 import { Menu, X, Home, PackageSearch, Info, LayoutDashboard, LogIn, LogOut } from 'lucide-react';
 import { categoryService } from '../services/api';
 import { authService } from '../services/authService';
@@ -96,28 +96,30 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
 
   return (
     <div className="fixed w-full z-50 top-0">
-      <div className="bg-gradient-to-b from-gray-900 to-black/90 backdrop-blur-md shadow-lg">
+      <div className="bg-gradient-to-b from-gray-900 to-black backdrop-blur-md shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-1">
           <div className="flex justify-between items-center h-16 md:h-16">
             {/* Logo */}
             <div
-              className="ml-5 md:ml-16 flex items-center gap-9 cursor-pointer"
+              className="ml-14 md:ml-20 flex items-center gap-9 cursor-pointer"
               onClick={() => navigate('/')}
             >
-              <img src={logo} alt="Logo" className="h-2 w-3 mt-1 ml-10" />
-              <h1 className="text-2xl  -ml-6 -mr-6 md:text-3xl font-semibold text-white">
-                Daniela Eventos
-              </h1>
-              <img src={logo} alt="Logo" className="h-2 w-3 mt-1" />
+              <div className="w-56 h-56 md:w-64 md:h-w-64">
+                <img
+                  src={logo}
+                  alt="Daniela Eventos Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-6 mr-4">
               {['home', 'menu', 'custom', 'about'].map(section => (
                 <button
                   key={section}
                   onClick={() => scrollToSection(section)}
-                  className={`px-3 py-2 text-lg transition-colors duration-300
+                  className={`ml-1 px-2 py-2 text-lg transition-colors duration-300
                     ${
                       activeSection === section
                         ? 'text-customColor'

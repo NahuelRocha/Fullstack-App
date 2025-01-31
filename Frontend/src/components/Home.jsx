@@ -70,7 +70,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Contenedor principal que ocupa toda la altura disponible después del navbar */}
-      <div className="h-[calc(100vh-6rem)] pt-36 md:pt-32 px-0">
+      <div className="h-[calc(100vh-6rem)] pt-32 md:pt-32 px-0">
         {/* Contenedor flex para centrar todo */}
         <div className="h-full flex items-center justify-center px-4 md:px-10">
           {/* Grid de dos columnas perfectamente simétricas */}
@@ -78,7 +78,7 @@ const Home = () => {
             {/* Columna izquierda - Logo y contenido */}
             <div className="flex flex-col items-center justify-center space-y-2 md:space-y-1 px-2 md:px-10 mr-0 md:-mr-10 -mt-6">
               {/* Logo container */}
-              <div className="w-40 h-48 md:w-48 md:h-48 -mb-9 md:-mb-5">
+              <div className="w-36 h-36 md:w-44 md:h-44 -mb-5 md:-mb-4">
                 <img
                   src={Logo}
                   alt="Daniela Eventos Logo"
@@ -87,34 +87,31 @@ const Home = () => {
               </div>
 
               {/* Contenido centrado */}
-              <div className="text-center max-w-lg space-y-1 md:space-y-1">
-                <h1 className="text-4xl md:text-4xl lg:text-6xl font-bold text-gray-800">
-                  {bannerData.title}
-                </h1>
-                <p className="text-lg md:text-lg text-gray-800 leading-relaxed">
+              <div className="text-center max-w-lg space-y-1 md:space-y-2">
+                <h1 className="text-4xl md:text-6xl font-bold text-gray-800">{bannerData.title}</h1>
+                <p className="text-md md:text-lg text-gray-800 leading-relaxed">
                   {bannerData.description}
                 </p>
-                <div className="pt-2">
-                  <Button
-                    title="Haz tu pedido"
-                    className="bg-brightColor text-white px-4 py-2 text-sm rounded-full hover:bg-opacity-90 transition-colors"
-                    scrollTarget="menu"
-                  />
+                <div className="pt-1">
+                  <Button title="Haz tu pedido" className="" scrollTarget="menu" />
                 </div>
               </div>
             </div>
 
             {/* Columna derecha - Slider */}
             <div className="flex items-center justify-center py-4 -mt-4 px-4 md:mt-0 mr-0 md:mr-6">
-              {/* Contenedor del slider */}
-              <div className="w-full max-w-2xl rounded-lg overflow-hidden shadow-2xl ml-0 md:-ml-10">
+              {/* Contenedor del slider con efecto de sombra y espacio */}
+              <div className="w-full max-w-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.2)] ml-0 md:-ml-10 p-4 bg-white/10 backdrop-blur-sm">
+                {' '}
+                {/* Efecto de sombra y espacio */}
+                {/* Contenedor interno del slider */}
                 <div className="relative aspect-[6/7] md:aspect-[18/11] w-full overflow-hidden">
-                  {/* Slides con transición mejorada */}
+                  {/* Slides con transición suave */}
                   {[currentIndex, nextIndex].map((index, i) => (
                     <div
                       key={index}
                       className={`absolute inset-0 transition-all duration-1000 ease-in-out
-                        ${i === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-110'}`}
+            ${i === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}`} // Transición suave sin colores
                     >
                       <img
                         src={bannerData.slides[index]?.url}
@@ -131,11 +128,11 @@ const Home = () => {
                         key={index}
                         onClick={() => goToNextSlide(index)}
                         className={`w-2 h-2 rounded-full transition-all duration-300
-                          ${
-                            index === currentIndex
-                              ? 'bg-customColor/80 scale-125'
-                              : 'bg-white/50 hover:bg-white/70'
-                          }`}
+              ${
+                index === currentIndex
+                  ? 'bg-customColor/80 scale-125'
+                  : 'bg-white/50 hover:bg-white/70'
+              }`}
                         aria-label={`Go to slide ${index + 1}`}
                       />
                     ))}

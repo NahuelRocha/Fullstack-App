@@ -73,15 +73,15 @@ const AdminLayout = () => {
       path: '/admin/business',
     },
     {
-      icon: <Info className="w-5 h-5" />, // Necesitarás importar Info de lucide-react
-      title: 'Información de About',
-      desc: 'Edita la información About!',
+      icon: <Info className="w-5 h-5" />,
+      title: 'Acerca de Nosotros',
+      desc: 'Edita la información acerca de Nosotros!',
       path: '/admin/about',
     },
   ];
 
   const Dashboard = () => (
-    <div className="space-y-4 mt-7">
+    <div className="space-y-4 mt-6">
       <h1 className="text-3xl font-bold text-gray-800 -mt-5 md:mt-1 mb-2 md:mb-6 ml-3">
         ¡Bienvenido al Panel de Administración!
       </h1>
@@ -154,7 +154,9 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      <div className={`transition-all duration-300 ease-in-out ${sidebarOpen ? 'lg:ml-64' : ''}`}>
+      <div
+        className={`mt-2 transition-all duration-300 ease-in-out ${sidebarOpen ? 'lg:ml-64' : ''}`}
+      >
         <div className="p-8">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}

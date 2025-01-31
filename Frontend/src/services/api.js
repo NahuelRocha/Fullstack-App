@@ -21,6 +21,7 @@ axiosInstance.interceptors.request.use(
       '/about',
       '/business/info',
       '/category/all',
+      '/product',
     ]; // Lista de endpoints públicos
     if (!publicEndpoints.includes(config.url)) {
       const token = authService.getToken();
@@ -297,7 +298,7 @@ export const productService = {
 
   // Create a new product
   createProduct: async productData => {
-    const response = await axiosInstance.post('/product', productData);
+    const response = await axiosInstance.post('/product/create', productData);
     return response.data;
   },
 

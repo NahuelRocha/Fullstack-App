@@ -19,7 +19,7 @@ const Button = ({ title, scrollTarget, ...props }) => {
   return (
     <button
       onClick={handleClick}
-      className="bg-brightColor text-white px-5 py-2 text-md rounded-full hover:bg-opacity-90 transition-colors"
+      className="bg-brightColor text-white px-6 py-1 text-md rounded-full hover:bg-opacity-90 transition-colors"
     >
       {title}
     </button>

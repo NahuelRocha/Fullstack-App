@@ -335,10 +335,7 @@ const ServiceManager = () => {
                       />
 
                       {/* Nombre del producto (con truncado y tooltip) */}
-                      <span
-                        className="flex-1 text-md truncate"
-                        title={item.name} // Tooltip con el nombre completo
-                      >
+                      <span className="flex-1 text-md truncate" title={item.name}>
                         {item.name}
                       </span>
 
