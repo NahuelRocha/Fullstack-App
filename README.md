@@ -6,7 +6,7 @@ Una Landing Page dinámica y totalmente administrable diseñada específicamente
 https://daniela-eventos.vercel.app/
 
 ## 📸 Capturas de pantalla
-[Colocar aquí las imágenes de la landing page y el panel de administración]
+<img src="https://github.com/NahuelRocha/Fullstack-App/blob/main/Frontend/src/assets/images/TEST.png" alt="Landing Page" width="600"/>
 
 ## 🎥 Video Demostración
 [Colocar aquí el enlace del video de YouTube]
