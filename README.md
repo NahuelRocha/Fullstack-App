@@ -64,6 +64,6 @@ El backend está optimizado para un rendimiento superior mediante:
 
 ## 👤 Dev
 
-[Tu Nombre]
+Nahuel Rocha
 - LinkedIn: https://www.linkedin.com/in/rocha-nahuel/
 - GitHub: https://github.com/NahuelRocha
