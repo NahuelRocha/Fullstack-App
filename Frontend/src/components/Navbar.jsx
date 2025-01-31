@@ -98,19 +98,14 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
     <div className="fixed w-full z-50 top-0">
       <div className="bg-gradient-to-b from-gray-900 to-black backdrop-blur-md shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-1">
-          <div className="flex justify-between items-center h-16 md:h-16">
+          <div className="pl-8 ml-1 md:ml-8 flex justify-between items-center h-16 md:h-16">
             {/* Logo */}
-            <div
-              className="ml-14 md:ml-20 flex items-center gap-9 cursor-pointer"
-              onClick={() => navigate('/')}
-            >
-              <div className="w-56 h-56 md:w-64 md:h-w-64">
-                <img
-                  src={logo}
-                  alt="Daniela Eventos Logo"
-                  className="w-full h-full object-contain"
-                />
-              </div>
+            <div className="flex items-center gap-9 cursor-pointer" onClick={() => navigate('/')}>
+              <img
+                src={logo}
+                alt="Daniela Eventos Logo"
+                className="w-5/6 h-5/6 md:w-4/6 md:h-4/6 object-contain"
+              />
             </div>
 
             {/* Desktop Navigation */}
@@ -168,7 +163,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
             {/* Mobile menu button */}
             <button
               onClick={handleChange}
-              className="md:hidden p-2 rounded-lg text-gray-200 hover:text-customColor transition-colors"
+              className="md:hidden p-2 -ml-2 rounded-lg text-gray-200 hover:text-customColor transition-colors"
             >
               {menu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>

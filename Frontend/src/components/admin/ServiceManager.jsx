@@ -244,8 +244,8 @@ const ServiceManager = () => {
               <div>
                 <label className="block text-gray-700 text-md font-bold">Categoría</label>
                 <select
-                  value={formData.newCategoryId}
-                  onChange={e => setFormData({ ...formData, newCategoryId: e.target.value })}
+                  value={formData.category}
+                  onChange={e => setFormData({ ...formData, category: Number(e.target.value) })}
                   className="mt-1 w-full rounded-lg border-2 border-gray-300 focus:border-customColor/70 focus:outline-none transition duration-150 py-2 px-2"
                 >
                   <option value="" className="text-md">
