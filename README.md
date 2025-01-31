@@ -2,6 +2,15 @@
 
 Una Landing Page dinámica y totalmente administrable diseñada específicamente para negocios gastronómicos, con un robusto panel de administración que permite la gestión completa del contenido, productos, menús y más.
 
+## 🌐 Url
+https://daniela-eventos.vercel.app/
+
+## 📸 Capturas de pantalla
+[Colocar aquí las imágenes de la landing page y el panel de administración]
+
+## 🎥 Video Demostración
+[Colocar aquí el enlace del video de YouTube]
+
 ## 🌟 Características Principales
 
 ### Landing Page
@@ -63,7 +72,6 @@ El backend está optimizado para un rendimiento superior mediante:
   - Rendimiento general
 
 ## 👤 Dev
-
 Nahuel Rocha
 - LinkedIn: https://www.linkedin.com/in/rocha-nahuel/
 - GitHub: https://github.com/NahuelRocha
