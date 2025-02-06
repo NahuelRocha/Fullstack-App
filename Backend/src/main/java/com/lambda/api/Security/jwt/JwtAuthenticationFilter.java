@@ -69,15 +69,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
 
-                    // Establecer la autenticación explícitamente
                     context.setAuthentication(authToken);
                     SecurityContextHolder.setContext(context);
                     securityContextRepository.saveContext(context, request, response);
-                    System.out.println("Explicit Authentication Set for: " + username);
-                    System.out.println("Authorities: " + authToken.getAuthorities());
                 } else {
                     System.out.println("Token validation failed for user: " + username);
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
                 }
 
             }
