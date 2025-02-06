@@ -108,14 +108,17 @@ const ServiceManager = () => {
 
       let updatedService;
 
+      const requestData = {
+        ...formData,
+        price: updatedPrice,
+        contentItems: formattedContentItems,
+        newCategoryId: formData.category, // Cambia 'category' por 'newCategoryId'
+      };
+
       if (editingService) {
         updatedService = await menuService.updateMenuItem({
           id: editingService.id,
-          updates: {
-            ...formData,
-            price: updatedPrice,
-            contentItems: formattedContentItems,
-          },
+          updates: requestData,
         });
 
         setServices(prevServices =>
@@ -123,7 +126,7 @@ const ServiceManager = () => {
         );
         setSuccessMessage('Servicio actualizado con éxito');
       } else {
-        const newService = await menuService.createMenuItem(formData);
+        const newService = await menuService.createMenuItem(requestData);
         setServices(prevServices => [...prevServices, newService]);
         setSuccessMessage('Servicio creado con éxito');
       }
@@ -139,9 +142,8 @@ const ServiceManager = () => {
   };
 
   const handleEditService = service => {
-    console.log('Contenido antes de reconstrucción:', service.contentItems);
-    const reconstructedProducts = reconstructSelectedProducts(service.contentItems, allProducts); // Cambiar products por allProducts
-    console.log('Productos reconstruidos:', reconstructedProducts);
+    const reconstructedProducts = reconstructSelectedProducts(service.contentItems, allProducts);
+
     setFormData(prev => ({
       ...prev,
       title: service.title,
