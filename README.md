@@ -71,6 +71,37 @@ El backend está optimizado para un rendimiento superior mediante:
   - Consumo de memoria
   - Rendimiento general
 
+### 📊 Comparativa de Logs de Rendimiento
+
+| **Método**       | **Acción**       | **Duración (ms)** | **Duración Facturada (ms)** | **Uso Máximo de Memoria (MB)** | **Duración de Inicialización (ms)** |
+|------------------|------------------|-------------------|-----------------------------|--------------------------------|-------------------------------------|
+| **GraalVM**      | **/GET HELLO**   | 48.07             | 69                          | 175                            | 1020.40                             |
+| **GraalVM**      | **/POST OBJECT** | 42.49             | 43                          | 176                            | N/A                                 |
+| **Java**         | **/GET HELLO**   | 1132.35           | 1133                        | 286                            | 8916.62                             |
+| **Java**         | **/POST OBJECT** | 753.96            | 774                         | 289                            | N/A                                 |
+
+### Análisis Comparativo:
+- **Tiempo de Arranque en Frío**:  
+  - **GraalVM**: 1020.40 ms  
+  - **Java**: 8916.62 ms  
+  El arranque en frío en GraalVM es significativamente más rápido, lo que es una ventaja clave al utilizar AWS Lambda, donde los tiempos de inicialización pueden impactar los costos y la eficiencia.
+  
+- **Tiempo de Ejecución de la Petición**:  
+  - **GraalVM** (GET HELLO): 48.07 ms  
+  - **Java** (GET HELLO): 1132.35 ms  
+  - **GraalVM** (POST OBJECT): 42.49 ms  
+  - **Java** (POST OBJECT): 753.96 ms  
+  GraalVM ofrece un rendimiento mucho más rápido en las solicitudes, lo que mejora la experiencia del usuario y reduce los costos asociados con el tiempo de ejecución.
+
+- **Consumo de Memoria**:  
+  - **GraalVM**: Máximo de 175 MB (GET HELLO)  
+  - **Java**: Máximo de 286 MB (GET HELLO)  
+  GraalVM consume menos memoria, lo que también tiene un impacto positivo en los costos de operación, ya que se paga por el consumo de recursos.
+
+### Conclusión:
+- La versión nativa de la API utilizando **GraalVM** muestra una mejora significativa en tiempos de arranque, tiempos de ejecución y consumo de memoria en comparación con la versión estándar utilizando **Java**.
+- La optimización con GraalVM permite ejecutar funciones de Lambda de manera más eficiente, lo que resulta en **menores costos operativos** y una **mejor experiencia de usuario** debido a la **reducción en los tiempos de respuesta**.
+
 ## 👤 Dev
 Nahuel Rocha
 - LinkedIn: https://www.linkedin.com/in/rocha-nahuel/
