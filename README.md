@@ -9,7 +9,7 @@ https://daniela-eventos.vercel.app/
 <img src="https://github.com/NahuelRocha/Fullstack-App/blob/main/Frontend/src/assets/images/home.png" alt="Landing Page" width="900"/>
 
 ## 🎥 Video Demostración
-[Colocar aquí el enlace del video de YouTube]
+https://www.linkedin.com/feed/update/urn:li:activity:7295136127500349440/
 
 ## 🌟 Características Principales
 
